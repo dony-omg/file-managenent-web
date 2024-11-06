@@ -68,19 +68,23 @@ export default function ActivityLogging() {
     const uniqueActions = Array.from(new Set(logs.map(log => log.action)))
 
     return (
-        <div className="container mx-auto">
-            <h1 className="text-3xl font-bold mb-5">Activity Logging</h1>
-            <div className="flex flex-col md:flex-row gap-4 mb-6">
-                <div className="flex-1">
-                    <Input
-                        placeholder="Search logs..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full"
-                        icon={<Search className="h-4 w-4 opacity-50" />}
-                    />
-                </div>
-                {/* <Select value={actionFilter || ''} onValueChange={setActionFilter}>
+        <div className="container mx-auto rounded-lg border bg-card text-card-foreground shadow-sm">
+            <div className="p-6">
+                <h1 className="text-2xl font-semibold leading-none tracking-tight">Activity Logging</h1>
+            </div>
+
+            <div className='p-6 pt-0'>
+                <div className="flex flex-col md:flex-row gap-4 mb-6">
+                    <div className="flex-1">
+                        <Input
+                            placeholder="Search logs..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full"
+                            icon={<Search className="h-4 w-4 opacity-50" />}
+                        />
+                    </div>
+                    {/* <Select value={actionFilter || ''} onValueChange={setActionFilter}>
                     <SelectTrigger className="w-full md:w-[200px]">
                         <SelectValue placeholder="Filter by action" />
                     </SelectTrigger>
@@ -91,59 +95,60 @@ export default function ActivityLogging() {
                         ))}
                     </SelectContent>
                 </Select> */}
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full md:w-[200px] justify-start text-left font-normal">
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {dateFilter ? format(dateFilter, 'PPP') : <span>Pick a date</span>}
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-full md:w-[200px] justify-start text-left font-normal">
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {dateFilter ? format(dateFilter, 'PPP') : <span>Pick a date</span>}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                            <Calendar
+                                mode="single"
+                                selected={dateFilter || undefined}
+                                onSelect={setDateFilter}
+                                initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
+                    {(actionFilter || dateFilter) && (
+                        <Button
+                            variant="ghost"
+                            onClick={() => {
+                                setActionFilter(null)
+                                setDateFilter(null)
+                            }}
+                        >
+                            Clear Filters
                         </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                        <Calendar
-                            mode="single"
-                            selected={dateFilter || undefined}
-                            onSelect={setDateFilter}
-                            initialFocus
-                        />
-                    </PopoverContent>
-                </Popover>
-                {(actionFilter || dateFilter) && (
-                    <Button
-                        variant="ghost"
-                        onClick={() => {
-                            setActionFilter(null)
-                            setDateFilter(null)
-                        }}
-                    >
-                        Clear Filters
-                    </Button>
+                    )}
+                </div>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>User</TableHead>
+                            <TableHead>Action</TableHead>
+                            <TableHead>Timestamp</TableHead>
+                            <TableHead>Details</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredLogs.map((log) => (
+                            <TableRow key={log.id}>
+                                <TableCell>{log.username}</TableCell>
+                                <TableCell>{log.action}</TableCell>
+                                <TableCell>{format(log.timestamp, 'PPP p')}</TableCell>
+                                <TableCell>{log.details}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                {filteredLogs.length === 0 && (
+                    <div className="text-center py-4 text-muted-foreground">
+                        No activity logs found matching the current filters.
+                    </div>
                 )}
             </div>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>User</TableHead>
-                        <TableHead>Action</TableHead>
-                        <TableHead>Timestamp</TableHead>
-                        <TableHead>Details</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {filteredLogs.map((log) => (
-                        <TableRow key={log.id}>
-                            <TableCell>{log.username}</TableCell>
-                            <TableCell>{log.action}</TableCell>
-                            <TableCell>{format(log.timestamp, 'PPP p')}</TableCell>
-                            <TableCell>{log.details}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-            {filteredLogs.length === 0 && (
-                <div className="text-center py-4 text-muted-foreground">
-                    No activity logs found matching the current filters.
-                </div>
-            )}
         </div>
     )
 }
