@@ -107,7 +107,7 @@ export default function VehicleManagement() {
     }
 
     return (
-        <div className="container mx-auto py-10">
+        <div className="container mx-auto">
             <h1 className="text-3xl font-bold mb-5">Vehicle Management</h1>
             <div className="flex justify-between items-center mb-5">
                 <Dialog open={isAddVehicleOpen} onOpenChange={setIsAddVehicleOpen}>

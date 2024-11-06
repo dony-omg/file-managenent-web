@@ -68,7 +68,7 @@ export default function ActivityLogging() {
     const uniqueActions = Array.from(new Set(logs.map(log => log.action)))
 
     return (
-        <div className="container mx-auto py-10">
+        <div className="container mx-auto">
             <h1 className="text-3xl font-bold mb-5">Activity Logging</h1>
             <div className="flex flex-col md:flex-row gap-4 mb-6">
                 <div className="flex-1">
