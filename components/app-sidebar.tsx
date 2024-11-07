@@ -59,7 +59,7 @@ const data = {
             items: [
                 {
                     title: "List",
-                    url: "/dashboard/vehicle",
+                    url: "/dashboard/vehicles",
                 },
                 {
                     title: "Create",
