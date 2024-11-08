@@ -1,7 +1,6 @@
 'use client'
 
-import * as React from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -14,10 +13,23 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react"
+import {
+    ChevronDown,
+    MoreHorizontal,
+    Plus,
+    Search,
+    SlidersHorizontal,
+    Eye,
+    Pencil,
+    Trash2,
+    CheckCircle,
+    AlertTriangle,
+    X
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -27,7 +39,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import {
     Table,
     TableBody,
@@ -36,84 +47,95 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
 
 // Mock data for vehicles
-const data = [
-    { id: 1, make: 'Toyota', model: 'Camry', year: 2022, licensePlate: 'ABC123' },
-    { id: 2, make: 'Honda', model: 'Civic', year: 2021, licensePlate: 'XYZ789' },
-    { id: 3, make: 'Ford', model: 'F-150', year: 2023, licensePlate: 'DEF456' },
-    { id: 4, make: 'Chevrolet', model: 'Malibu', year: 2020, licensePlate: 'GHI789' },
-    { id: 5, make: 'Nissan', model: 'Altima', year: 2022, licensePlate: 'JKL012' },
+const data: Vehicle[] = [
+    { id: 1, registrationNumber: 'ABC123', type: 'Car', brand: 'Toyota', owner: 'John Doe', status: 'active', expiryDate: '2024-05-15' },
+    { id: 2, registrationNumber: 'XYZ789', type: 'Motorcycle', brand: 'Honda', owner: 'Jane Smith', status: 'expiring', expiryDate: '2023-08-30' },
+    { id: 3, registrationNumber: 'DEF456', type: 'Truck', brand: 'Ford', owner: 'Bob Johnson', status: 'expired', expiryDate: '2023-03-01' },
+    { id: 4, registrationNumber: 'GHI789', type: 'Car', brand: 'Chevrolet', owner: 'Alice Brown', status: 'active', expiryDate: '2024-11-20' },
+    { id: 5, registrationNumber: 'JKL012', type: 'SUV', brand: 'Nissan', owner: 'Charlie Davis', status: 'active', expiryDate: '2024-09-10' },
 ]
 
-export type Vehicle = typeof data[0]
+type Vehicle = {
+    id: number
+    registrationNumber: string
+    type: string
+    brand: string
+    owner: string
+    status: 'active' | 'expiring' | 'expired'
+    expiryDate: string
+}
 
 export default function VehicleList() {
-    const router = useRouter()
-    const [sorting, setSorting] = React.useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-    const [rowSelection, setRowSelection] = React.useState({})
+    const [sorting, setSorting] = useState<SortingState>([])
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+    const [rowSelection, setRowSelection] = useState({})
+    const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null)
 
     const columns: ColumnDef<Vehicle>[] = [
         {
-            id: "select",
-            header: ({ table }) => (
-                <Checkbox
-                    checked={table.getIsAllPageRowsSelected()}
-                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                    aria-label="Select all"
-                />
-            ),
-            cell: ({ row }) => (
-                <Checkbox
-                    checked={row.getIsSelected()}
-                    onCheckedChange={(value) => row.toggleSelected(!!value)}
-                    aria-label="Select row"
-                />
-            ),
-            enableSorting: false,
-            enableHiding: false,
+            accessorKey: "registrationNumber",
+            header: "Registration Number",
+            cell: ({ row }) => <div className="font-medium">{row.getValue("registrationNumber")}</div>,
         },
         {
-            accessorKey: "make",
-            header: ({ column }) => {
+            accessorKey: "type",
+            header: "Vehicle Type",
+        },
+        {
+            accessorKey: "brand",
+            header: "Brand",
+        },
+        {
+            accessorKey: "owner",
+            header: "Owner",
+        },
+        {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ row }) => {
+                const status = row.getValue("status") as string
                 return (
-                    <Button
-                        variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                    >
-                        Make
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
+                    <Badge className={
+                        status === 'active' ? "bg-green-500" :
+                            status === 'expiring' ? "bg-yellow-500" :
+                                "bg-red-500"
+                    }>
+                        {status === 'active' && <CheckCircle className="w-4 h-4 mr-1" />}
+                        {status === 'expiring' && <AlertTriangle className="w-4 h-4 mr-1" />}
+                        {status === 'expired' && <X className="w-4 h-4 mr-1" />}
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                    </Badge>
                 )
             },
-            cell: ({ row }) => <div className="lowercase">{row.getValue("make")}</div>,
         },
         {
-            accessorKey: "model",
-            header: "Model",
-            cell: ({ row }) => <div className="lowercase">{row.getValue("model")}</div>,
-        },
-        {
-            accessorKey: "year",
-            header: () => <div className="text-right">Year</div>,
-            cell: ({ row }) => {
-                return <div className="text-right font-medium">{row.getValue("year")}</div>
-            },
-        },
-        {
-            accessorKey: "licensePlate",
-            header: "License Plate",
-            cell: ({ row }) => <div>{row.getValue("licensePlate")}</div>,
+            accessorKey: "expiryDate",
+            header: "Expiry Date",
         },
         {
             id: "actions",
-            enableHiding: false,
             cell: ({ row }) => {
                 const vehicle = row.original
-
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -124,17 +146,18 @@ export default function VehicleList() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem
-                                onClick={() => navigator.clipboard.writeText(vehicle.id.toString())}
-                            >
-                                Copy vehicle ID
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => router.push(`/dashboard/vehicles/${vehicle.id}`)}>
+                            <DropdownMenuItem onClick={() => setSelectedVehicle(vehicle)}>
+                                <Eye className="mr-2 h-4 w-4" />
                                 View details
                             </DropdownMenuItem>
-                            <DropdownMenuItem>Edit vehicle</DropdownMenuItem>
-                            <DropdownMenuItem>Delete vehicle</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => console.log('Edit', vehicle.id)}>
+                                <Pencil className="mr-2 h-4 w-4" />
+                                Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => console.log('Delete', vehicle.id)}>
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
@@ -162,121 +185,223 @@ export default function VehicleList() {
     })
 
     return (
-        <div className="container mx-auto p-4">
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-2xl font-bold">Vehicle List</CardTitle>
+        <div className="container mx-auto py-10">
+            <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center space-x-2">
+                    <Input
+                        placeholder="Search vehicles..."
+                        value={(table.getColumn("registrationNumber")?.getFilterValue() as string) ?? ""}
+                        onChange={(event) =>
+                            table.getColumn("registrationNumber")?.setFilterValue(event.target.value)
+                        }
+                        className="max-w-sm"
+                    />
                     <Button>
-                        <Plus className="mr-2 h-4 w-4" /> Add New Vehicle
+                        <Search className="mr-2 h-4 w-4" />
+                        Search
                     </Button>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex items-center py-4">
-                        <Input
-                            placeholder="Filter makes..."
-                            value={(table.getColumn("make")?.getFilterValue() as string) ?? ""}
-                            onChange={(event) =>
-                                table.getColumn("make")?.setFilterValue(event.target.value)
-                            }
-                            className="max-w-sm"
-                        />
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="ml-auto">
-                                    Columns <ChevronDown className="ml-2 h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                {table
-                                    .getAllColumns()
-                                    .filter((column) => column.getCanHide())
-                                    .map((column) => {
-                                        return (
-                                            <DropdownMenuCheckboxItem
-                                                key={column.id}
-                                                className="capitalize"
-                                                checked={column.getIsVisible()}
-                                                onCheckedChange={(value) =>
-                                                    column.toggleVisibility(!!value)
-                                                }
-                                            >
-                                                {column.id}
-                                            </DropdownMenuCheckboxItem>
-                                        )
-                                    })}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-                    <div className="rounded-md border">
-                        <Table>
-                            <TableHeader>
-                                {table.getHeaderGroups().map((headerGroup) => (
-                                    <TableRow key={headerGroup.id}>
-                                        {headerGroup.headers.map((header) => {
-                                            return (
-                                                <TableHead key={header.id}>
-                                                    {header.isPlaceholder
-                                                        ? null
-                                                        : flexRender(
-                                                            header.column.columnDef.header,
-                                                            header.getContext()
-                                                        )}
-                                                </TableHead>
-                                            )
-                                        })}
-                                    </TableRow>
-                                ))}
-                            </TableHeader>
-                            <TableBody>
-                                {table.getRowModel().rows?.length ? (
-                                    table.getRowModel().rows.map((row) => (
-                                        <TableRow
-                                            key={row.id}
-                                            data-state={row.getIsSelected() && "selected"}
+                </div>
+                <div className="flex items-center space-x-2">
+                    <Button onClick={() => console.log('Add new vehicle')}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Vehicle
+                    </Button>
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button variant="outline">
+                                <SlidersHorizontal className="mr-2 h-4 w-4" />
+                                Filter
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent>
+                            <SheetHeader>
+                                <SheetTitle>Filter Vehicles</SheetTitle>
+                                <SheetDescription>
+                                    Use the options below to filter the vehicle list.
+                                </SheetDescription>
+                            </SheetHeader>
+                            <div className="grid gap-4 py-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="vehicleType">Vehicle Type</Label>
+                                    <Select>
+                                        <SelectTrigger id="vehicleType">
+                                            <SelectValue placeholder="Select type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="car">Car</SelectItem>
+                                            <SelectItem value="motorcycle">Motorcycle</SelectItem>
+                                            <SelectItem value="truck">Truck</SelectItem>
+                                            <SelectItem value="suv">SUV</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="status">Registration Status</Label>
+                                    <Select>
+                                        <SelectTrigger id="status">
+                                            <SelectValue placeholder="Select status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="active">Active</SelectItem>
+                                            <SelectItem value="expiring">Expiring Soon</SelectItem>
+                                            <SelectItem value="expired">Expired</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="owner">Owner</Label>
+                                    <Input id="owner" placeholder="Filter by owner name" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Expiry Date Range</Label>
+                                    <div className="flex space-x-2">
+                                        <Input type="date" placeholder="Start date" />
+                                        <Input type="date" placeholder="End date" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex justify-end space-x-2">
+                                <Button variant="outline" onClick={() => console.log('Reset filters')}>Reset</Button>
+                                <Button onClick={() => console.log('Apply filters')}>Apply Filters</Button>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline">
+                                Columns <ChevronDown className="ml-2 h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {table
+                                .getAllColumns()
+                                .filter((column) => column.getCanHide())
+                                .map((column) => {
+                                    return (
+                                        <DropdownMenuCheckboxItem
+                                            key={column.id}
+                                            className="capitalize"
+                                            checked={column.getIsVisible()}
+                                            onCheckedChange={(value) =>
+                                                column.toggleVisibility(!!value)
+                                            }
                                         >
-                                            {row.getVisibleCells().map((cell) => (
-                                                <TableCell key={cell.id}>
-                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                                </TableCell>
-                                            ))}
-                                        </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell colSpan={columns.length} className="h-24 text-center">
-                                            No results.
+                                            {column.id}
+                                        </DropdownMenuCheckboxItem>
+                                    )
+                                })}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </div>
+            <div className="rounded-md border">
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => {
+                                    return (
+                                        <TableHead key={header.id}>
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                        </TableHead>
+                                    )
+                                })}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows?.length ? (
+                            table.getRowModel().rows.map((row) => (
+                                <TableRow
+                                    key={row.id}
+                                    data-state={row.getIsSelected() && "selected"}
+                                >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
-                    <div className="flex items-center justify-end space-x-2 py-4">
-                        <div className="flex-1 text-sm text-muted-foreground">
-                            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                            {table.getFilteredRowModel().rows.length} row(s) selected.
+                                    ))}
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    No results.
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+            <div className="flex items-center justify-between space-x-2 py-4">
+                <div className="flex-1 text-sm text-muted-foreground">
+                    {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                    {table.getFilteredRowModel().rows.length} row(s) selected.
+                </div>
+                <div className="space-x-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        Previous
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        Next
+                    </Button>
+                </div>
+            </div>
+            {selectedVehicle && (
+                <Card className="mt-4">
+                    <CardHeader>
+                        <CardTitle>Vehicle Details</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label>Registration Number</Label>
+                                <div>{selectedVehicle.registrationNumber}</div>
+                            </div>
+                            <div>
+                                <Label>Vehicle Type</Label>
+                                <div>{selectedVehicle.type}</div>
+                            </div>
+                            <div>
+                                <Label>Brand</Label>
+                                <div>{selectedVehicle.brand}</div>
+                            </div>
+                            <div>
+                                <Label>Owner</Label>
+                                <div>{selectedVehicle.owner}</div>
+                            </div>
+                            <div>
+                                <Label>Status</Label>
+                                <div>{selectedVehicle.status}</div>
+                            </div>
+                            <div>
+                                <Label>Expiry Date</Label>
+                                <div>{selectedVehicle.expiryDate}</div>
+                            </div>
                         </div>
-                        <div className="space-x-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => table.previousPage()}
-                                disabled={!table.getCanPreviousPage()}
-                            >
-                                Previous
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => table.nextPage()}
-                                disabled={!table.getCanNextPage()}
-                            >
-                                Next
-                            </Button>
+                        <div className="mt-4 flex justify-end space-x-2">
+                            <Button variant="outline" onClick={() => console.log('Edit', selectedVehicle.id)}>Edit</Button>
+                            <Button variant="outline" className="text-red-500 hover:text-red-700" onClick={() => console.log('Delete', selectedVehicle.id)}>Delete</Button>
+                            <Button onClick={() => console.log('View Full Details', selectedVehicle.id)}>View Full Details</Button>
                         </div>
-                    </div>
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     )
 }

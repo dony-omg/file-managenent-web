@@ -6,129 +6,114 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { PlusCircle, FileText, Car, Activity, Image as ImageIcon, File, FileImage } from "lucide-react"
+import { Car, FileText, Pencil, Trash2, AlertTriangle, CheckCircle, Download, Eye, PlusCircle, Activity } from "lucide-react"
 
 // Mock data for the vehicle
 const vehicleData = {
     id: 1,
-    make: "Toyota",
+    registrationNumber: "ABC 123",
+    type: "Car",
+    brand: "Toyota",
     model: "Camry",
+    color: "Silver",
     year: 2022,
-    licensePlate: "ABC123",
-    vin: "1HGBH41JXMN109186",
-    currentMileage: 15000,
-    media: [
-        { type: 'image', url: "/placeholder.svg?height=200&width=300&text=Front+View" },
-        { type: 'image', url: "/placeholder.svg?height=200&width=300&text=Side+View" },
-        { type: 'image', url: "/placeholder.svg?height=200&width=300&text=Interior" },
-        { type: 'image', url: "/placeholder.svg?height=200&width=300&text=Rear+View" },
-    ]
+    owner: {
+        name: "John Doe",
+        contact: "+1 234 567 8900"
+    },
+    registration: {
+        date: "2023-01-01",
+        expiry: "2024-01-01",
+        status: "active"
+    }
 }
 
 // Mock data for documents
 const initialDocuments = [
-    { id: 1, name: 'Insurance Policy', type: 'pdf', uploadDate: '2023-05-15', url: '/placeholder.svg?height=400&width=300&text=Insurance+Policy' },
-    { id: 2, name: 'Registration Certificate', type: 'pdf', uploadDate: '2023-04-20', url: '/placeholder.svg?height=400&width=300&text=Registration+Certificate' },
-    { id: 3, name: 'Maintenance Record', type: 'docx', uploadDate: '2023-06-01', url: '/placeholder.svg?height=400&width=300&text=Maintenance+Record' },
-    { id: 4, name: 'Vehicle Photo', type: 'jpg', uploadDate: '2023-07-01', url: '/placeholder.svg?height=400&width=300&text=Vehicle+Photo' },
+    { id: 1, name: 'Vehicle Registration Document', type: 'pdf', uploadDate: '2023-01-01' },
+    { id: 2, 'name': 'Vehicle Insurance', type: 'pdf', uploadDate: '2023-01-01' },
+    { id: 3, name: 'Inspection Certificate', type: 'pdf', uploadDate: '2023-01-01' },
+    { id: 4, name: 'Sales Invoice', type: 'jpg', uploadDate: '2023-01-01' },
 ]
 
-// Mock data for logs
-const initialLogs = [
-    { id: 1, action: 'Oil Change', date: '2023-07-01', details: 'Regular maintenance' },
-    { id: 2, action: 'Tire Rotation', date: '2023-07-01', details: 'As part of regular service' },
-    { id: 3, action: 'Brake Inspection', date: '2023-06-15', details: 'Routine safety check' },
-    { id: 4, action: 'Battery Replacement', date: '2023-05-20', details: 'Old battery was failing' },
+// Mock data for activity history
+const activityHistory = [
+    { id: 1, action: 'Registration Renewed', date: '2023-01-01', details: 'Annual registration renewal' },
+    { id: 2, action: 'Document Added', date: '2023-01-01', details: 'Added new insurance document' },
+    { id: 3, action: 'Information Updated', date: '2022-12-15', details: 'Updated owner contact information' },
+    { id: 4, action: 'Initial Registration', date: '2022-01-01', details: 'Vehicle initially registered' },
 ]
 
 export default function VehicleDetail() {
     const [documents, setDocuments] = useState(initialDocuments)
-    const [newDocument, setNewDocument] = useState({ name: '', type: '' })
-    const [logs, setLogs] = useState(initialLogs)
-    const [newLog, setNewLog] = useState({ action: '', details: '' })
+    const [reminderEnabled, setReminderEnabled] = useState(false)
 
-    const handleAddDocument = (e: React.FormEvent) => {
-        e.preventDefault()
-        const newDoc = {
-            id: documents.length + 1,
-            ...newDocument,
-            uploadDate: new Date().toISOString().split('T')[0],
-            url: '/placeholder.svg?height=400&width=300&text=' + newDocument.name.replace(' ', '+')
-        }
-        setDocuments([...documents, newDoc])
-        setNewDocument({ name: '', type: '' })
-    }
-
-    const handleAddLog = (e: React.FormEvent) => {
-        e.preventDefault()
-        const newLogEntry = {
-            id: logs.length + 1,
-            ...newLog,
-            date: new Date().toISOString().split('T')[0]
-        }
-        setLogs([newLogEntry, ...logs])
-        setNewLog({ action: '', details: '' })
-    }
-
-    const getFileIcon = (type: string) => {
-        switch (type) {
-            case 'pdf':
-                return <FileText className="h-4 w-4 text-red-500" />
-            case 'docx':
-                return <File className="h-4 w-4 text-blue-500" />
-            case 'jpg':
-            case 'png':
-            case 'gif':
-                return <FileImage className="h-4 w-4 text-green-500" />
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case 'active':
+                return <Badge className="bg-green-500"><CheckCircle className="w-4 h-4 mr-1" /> Active</Badge>
+            case 'expiring':
+                return <Badge className="bg-yellow-500"><AlertTriangle className="w-4 h-4 mr-1" /> Expiring Soon</Badge>
+            case 'expired':
+                return <Badge className="bg-red-500"><AlertTriangle className="w-4 h-4 mr-1" /> Expired</Badge>
             default:
-                return <File className="h-4 w-4" />
+                return null
         }
     }
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Vehicle Detail</h1>
+            <div className="bg-white shadow rounded-lg p-6 mb-6">
+                <div className="flex justify-between items-center mb-4">
+                    <h1 className="text-3xl font-bold">{vehicleData.registrationNumber}</h1>
+                    <div className="flex space-x-2">
+                        <Button variant="outline"><Pencil className="w-4 h-4 mr-2" /> Edit Info</Button>
+                        <Button variant="outline" className="text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Delete Vehicle</Button>
+                        <Button>Renew Registration</Button>
+                    </div>
+                </div>
+                {getStatusBadge(vehicleData.registration.status)}
+            </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-                <Card>
+            <div className="grid md:grid-cols-3 gap-6">
+                <Card className="md:col-span-2">
                     <CardHeader>
-                        <CardTitle>Vehicle Information</CardTitle>
-                        <CardDescription>Details about the vehicle</CardDescription>
+                        <CardTitle>Basic Information</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-2">
-                            <div className="flex items-center">
-                                <Car className="mr-2 h-4 w-4" />
-                                <span className="font-semibold">Make:</span>
-                                <span className="ml-2">{vehicleData.make}</span>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label>Registration Number</Label>
+                                <div>{vehicleData.registrationNumber}</div>
                             </div>
-                            <div className="flex items-center">
-                                <Car className="mr-2 h-4 w-4" />
-                                <span className="font-semibold">Model:</span>
-                                <span className="ml-2">{vehicleData.model}</span>
+                            <div>
+                                <Label>Vehicle Type</Label>
+                                <div>{vehicleData.type}</div>
                             </div>
-                            <div className="flex items-center">
-                                <Car className="mr-2 h-4 w-4" />
-                                <span className="font-semibold">Year:</span>
-                                <span className="ml-2">{vehicleData.year}</span>
+                            <div>
+                                <Label>Brand</Label>
+                                <div>{vehicleData.brand}</div>
                             </div>
-                            <div className="flex items-center">
-                                <Car className="mr-2 h-4 w-4" />
-                                <span className="font-semibold">License Plate:</span>
-                                <span className="ml-2">{vehicleData.licensePlate}</span>
+                            <div>
+                                <Label>Model</Label>
+                                <div>{vehicleData.model}</div>
                             </div>
-                            <div className="flex items-center">
-                                <Car className="mr-2 h-4 w-4" />
-                                <span className="font-semibold">VIN:</span>
-                                <span className="ml-2">{vehicleData.vin}</span>
+                            <div>
+                                <Label>Color</Label>
+                                <div>{vehicleData.color}</div>
                             </div>
-                            <div className="flex items-center">
-                                <Car className="mr-2 h-4 w-4" />
-                                <span className="font-semibold">Current Mileage:</span>
-                                <span className="ml-2">{vehicleData.currentMileage} miles</span>
+                            <div>
+                                <Label>Year of Manufacture</Label>
+                                <div>{vehicleData.year}</div>
+                            </div>
+                            <div className="col-span-2">
+                                <Label>Owner</Label>
+                                <div>{vehicleData.owner.name} - {vehicleData.owner.contact}</div>
                             </div>
                         </div>
                     </CardContent>
@@ -136,171 +121,94 @@ export default function VehicleDetail() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Media</CardTitle>
-                        <CardDescription>Images and videos of the vehicle</CardDescription>
+                        <CardTitle>Registration Information</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-2 gap-4">
-                            {vehicleData.media.map((item, index) => (
-                                <div key={index} className="relative aspect-video overflow-hidden rounded-lg">
-                                    <Image
-                                        src={item.url}
-                                        alt={`Vehicle image ${index + 1}`}
-                                        layout="fill"
-                                        objectFit="cover"
-                                    />
-                                </div>
-                            ))}
+                        <div className="space-y-2">
+                            <div>
+                                <Label>Registration Date</Label>
+                                <div>{vehicleData.registration.date}</div>
+                            </div>
+                            <div>
+                                <Label>Expiry Date</Label>
+                                <div>{vehicleData.registration.expiry}</div>
+                            </div>
+                            <div>
+                                <Label>Status</Label>
+                                <div>{getStatusBadge(vehicleData.registration.status)}</div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Switch
+                                    id="reminder"
+                                    checked={reminderEnabled}
+                                    onCheckedChange={setReminderEnabled}
+                                />
+                                <Label htmlFor="reminder">Renewal Reminder</Label>
+                            </div>
                         </div>
-                        <Button className="mt-4 w-full">
-                            <PlusCircle className="mr-2 h-4 w-4" /> Add Media
+                    </CardContent>
+                </Card>
+
+                <Card className="md:col-span-3">
+                    <CardHeader>
+                        <CardTitle>Related Documents</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Document Name</TableHead>
+                                    <TableHead>Type</TableHead>
+                                    <TableHead>Upload Date</TableHead>
+                                    <TableHead>Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {documents.map((doc) => (
+                                    <TableRow key={doc.id}>
+                                        <TableCell>{doc.name}</TableCell>
+                                        <TableCell>{doc.type.toUpperCase()}</TableCell>
+                                        <TableCell>{doc.uploadDate}</TableCell>
+                                        <TableCell>
+                                            <div className="flex space-x-2">
+                                                <Button variant="outline" size="sm"><Download className="w-4 h-4" /></Button>
+                                                <Button variant="outline" size="sm"><Eye className="w-4 h-4" /></Button>
+                                                <Button variant="outline" size="sm" className="text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4" /></Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        <Button className="mt-4">
+                            <PlusCircle className="w-4 h-4 mr-2" /> Add Document
                         </Button>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="md:col-span-3">
                     <CardHeader>
-                        <CardTitle>Documents</CardTitle>
-                        <CardDescription>Manage vehicle-related documents</CardDescription>
+                        <CardTitle>Registration and Activity History</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Tabs defaultValue="list" className="w-full">
-                            <TabsList>
-                                <TabsTrigger value="list">Document List</TabsTrigger>
-                                <TabsTrigger value="add">Add Document</TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="list">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Name</TableHead>
-                                            <TableHead>Type</TableHead>
-                                            <TableHead>Upload Date</TableHead>
-                                            <TableHead>Preview</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {documents.map((doc) => (
-                                            <TableRow key={doc.id}>
-                                                <TableCell className="font-medium">
-                                                    <div className="flex items-center">
-                                                        {getFileIcon(doc.type)}
-                                                        <span className="ml-2">{doc.name}</span>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>{doc.type.toUpperCase()}</TableCell>
-                                                <TableCell>{doc.uploadDate}</TableCell>
-                                                <TableCell>
-                                                    {doc.type === 'jpg' || doc.type === 'png' || doc.type === 'gif' ? (
-                                                        <Dialog>
-                                                            <DialogTrigger asChild>
-                                                                <Button variant="outline" size="sm">Preview</Button>
-                                                            </DialogTrigger>
-                                                            <DialogContent className="sm:max-w-[425px]">
-                                                                <Image
-                                                                    src={doc.url}
-                                                                    alt={doc.name}
-                                                                    width={400}
-                                                                    height={300}
-                                                                    layout="responsive"
-                                                                />
-                                                            </DialogContent>
-                                                        </Dialog>
-                                                    ) : (
-                                                        <Button variant="outline" size="sm" disabled>Preview</Button>
-                                                    )}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TabsContent>
-                            <TabsContent value="add">
-                                <form onSubmit={handleAddDocument} className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="docName">Document Name</Label>
-                                        <Input
-                                            id="docName"
-                                            value={newDocument.name}
-                                            onChange={(e) => setNewDocument({ ...newDocument, name: e.target.value })}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="docType">Document Type</Label>
-                                        <Input
-                                            id="docType"
-                                            value={newDocument.type}
-                                            onChange={(e) => setNewDocument({ ...newDocument, type: e.target.value })}
-                                            required
-                                        />
-                                    </div>
-                                    <Button type="submit">
-                                        <PlusCircle className="mr-2 h-4 w-4" /> Add Document
-                                    </Button>
-                                </form>
-                            </TabsContent>
-                        </Tabs>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Active Logging</CardTitle>
-                        <CardDescription>Recent activities and maintenance logs</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Tabs defaultValue="list" className="w-full">
-                            <TabsList>
-                                <TabsTrigger value="list">Log List</TabsTrigger>
-                                <TabsTrigger value="add">Add Log</TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="list">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Date</TableHead>
-                                            <TableHead>Action</TableHead>
-                                            <TableHead>Details</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {logs.map((log) => (
-                                            <TableRow key={log.id}>
-                                                <TableCell>{log.date}</TableCell>
-                                                <TableCell className="font-medium">{log.action}</TableCell>
-                                                <TableCell>{log.details}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TabsContent>
-                            <TabsContent value="add">
-                                <form onSubmit={handleAddLog} className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="logAction">Action</Label>
-                                        <Input
-                                            id="logAction"
-                                            value={newLog.action}
-                                            onChange={(e) => setNewLog({ ...newLog, action: e.target.value })}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="logDetails">Details</Label>
-                                        <Input
-                                            id="logDetails"
-                                            value={newLog.details}
-                                            onChange={(e) => setNewLog({ ...newLog, details: e.target.value })}
-                                            required
-                                        />
-                                    </div>
-                                    <Button type="submit">
-                                        <Activity className="mr-2 h-4 w-4" /> Add Log Entry
-                                    </Button>
-                                </form>
-                            </TabsContent>
-                        </Tabs>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Action</TableHead>
+                                    <TableHead>Details</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {activityHistory.map((activity) => (
+                                    <TableRow key={activity.id}>
+                                        <TableCell>{activity.date}</TableCell>
+                                        <TableCell>{activity.action}</TableCell>
+                                        <TableCell>{activity.details}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
                     </CardContent>
                 </Card>
             </div>

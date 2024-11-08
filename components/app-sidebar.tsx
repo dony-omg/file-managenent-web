@@ -52,56 +52,22 @@ const data = {
     // ],
     navMain: [
         {
-            title: "Vehicle",
+            title: "Documentation",
             url: "#",
             icon: SquareTerminal,
             isActive: true,
             items: [
                 {
-                    title: "List",
+                    title: "Overview",
+                    url: "/dashboard",
+                },
+                {
+                    title: "Registration",
                     url: "/dashboard/vehicles",
                 },
                 {
                     title: "Create",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Customer",
-            url: "#",
-            icon: Bot,
-            items: [
-                {
-                    title: "List",
-                    url: "/dashboard/user",
-                },
-                {
-                    title: "Activity Logging",
-                    url: "/dashboard/activity-logging",
-                },
-            ],
-        },
-        {
-            title: "Documentation",
-            url: "#",
-            icon: BookOpen,
-            items: [
-                {
-                    title: "Introduction",
-                    url: "#",
-                },
-                {
-                    title: "Get Started",
-                    url: "#",
-                },
-                {
-                    title: "Tutorials",
-                    url: "#",
-                },
-                {
-                    title: "Changelog",
-                    url: "#",
+                    url: "/dashboard/vehicles/create",
                 },
             ],
         },
@@ -115,13 +81,13 @@ const data = {
                     url: "#",
                 },
                 {
-                    title: "Team",
-                    url: "#",
+                    title: "Members",
+                    url: "/dashboard/user",
                 },
                 {
-                    title: "Billing",
-                    url: "#",
-                },
+                    title: "Activity Logging",
+                    url: "/dashboard/activity-logging",
+                }
             ],
         },
     ],
