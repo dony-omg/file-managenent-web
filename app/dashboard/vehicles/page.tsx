@@ -65,6 +65,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 
+import { useRouter } from 'next/navigation'
+
 // Mock data for vehicles
 const data: Vehicle[] = [
     { id: 1, registrationNumber: 'ABC123', type: 'Car', brand: 'Toyota', owner: 'John Doe', status: 'active', expiryDate: '2024-05-15' },
@@ -85,6 +87,7 @@ type Vehicle = {
 }
 
 export default function VehicleList() {
+    const router = useRouter()
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -397,7 +400,7 @@ export default function VehicleList() {
                         <div className="mt-4 flex justify-end space-x-2">
                             <Button variant="outline" onClick={() => console.log('Edit', selectedVehicle.id)}>Edit</Button>
                             <Button variant="outline" className="text-red-500 hover:text-red-700" onClick={() => console.log('Delete', selectedVehicle.id)}>Delete</Button>
-                            <Button onClick={() => console.log('View Full Details', selectedVehicle.id)}>View Full Details</Button>
+                            <Button onClick={() => router.push(`/dashboard/vehicles/${selectedVehicle.id}`)}>View Full Details</Button>
                         </div>
                     </CardContent>
                 </Card>
