@@ -62,7 +62,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 
 import { useRouter } from 'next/navigation'
@@ -188,223 +188,231 @@ export default function VehicleList() {
     })
 
     return (
-        <div className="container mx-auto py-10">
-            <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center space-x-2">
-                    <Input
-                        placeholder="Search vehicles..."
-                        value={(table.getColumn("registrationNumber")?.getFilterValue() as string) ?? ""}
-                        onChange={(event) =>
-                            table.getColumn("registrationNumber")?.setFilterValue(event.target.value)
-                        }
-                        className="max-w-sm"
-                    />
-                    <Button>
-                        <Search className="mr-2 h-4 w-4" />
-                        Search
-                    </Button>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <Button onClick={() => console.log('Add new vehicle')}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Vehicle
-                    </Button>
-                    <Sheet>
-                        <SheetTrigger asChild>
-                            <Button variant="outline">
-                                <SlidersHorizontal className="mr-2 h-4 w-4" />
-                                Filter
+        <Card>
+            <CardHeader>
+                <CardTitle>Document Registration</CardTitle>
+                <CardDescription>Enter the details of the new vehicle to add it to the system.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div>
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="flex items-center space-x-2 w-full">
+                            <Input
+                                placeholder="Search vehicles..."
+                                value={(table.getColumn("registrationNumber")?.getFilterValue() as string) ?? ""}
+                                onChange={(event) =>
+                                    table.getColumn("registrationNumber")?.setFilterValue(event.target.value)
+                                }
+                                className="max-w-sm"
+                            />
+                            <Button>
+                                <Search className="mr-2 h-4 w-4" />
+                                Search
                             </Button>
-                        </SheetTrigger>
-                        <SheetContent>
-                            <SheetHeader>
-                                <SheetTitle>Filter Vehicles</SheetTitle>
-                                <SheetDescription>
-                                    Use the options below to filter the vehicle list.
-                                </SheetDescription>
-                            </SheetHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="vehicleType">Vehicle Type</Label>
-                                    <Select>
-                                        <SelectTrigger id="vehicleType">
-                                            <SelectValue placeholder="Select type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="car">Car</SelectItem>
-                                            <SelectItem value="motorcycle">Motorcycle</SelectItem>
-                                            <SelectItem value="truck">Truck</SelectItem>
-                                            <SelectItem value="suv">SUV</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="status">Registration Status</Label>
-                                    <Select>
-                                        <SelectTrigger id="status">
-                                            <SelectValue placeholder="Select status" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="active">Active</SelectItem>
-                                            <SelectItem value="expiring">Expiring Soon</SelectItem>
-                                            <SelectItem value="expired">Expired</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="owner">Owner</Label>
-                                    <Input id="owner" placeholder="Filter by owner name" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Expiry Date Range</Label>
-                                    <div className="flex space-x-2">
-                                        <Input type="date" placeholder="Start date" />
-                                        <Input type="date" placeholder="End date" />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Button onClick={() => router.push('/dashboard/vehicles/create')}>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Document
+                            </Button>
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button variant="outline">
+                                        <SlidersHorizontal className="mr-2 h-4 w-4" />
+                                        Filter
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent>
+                                    <SheetHeader>
+                                        <SheetTitle>Filter Vehicles</SheetTitle>
+                                        <SheetDescription>
+                                            Use the options below to filter the vehicle list.
+                                        </SheetDescription>
+                                    </SheetHeader>
+                                    <div className="grid gap-4 py-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="vehicleType">Vehicle Type</Label>
+                                            <Select>
+                                                <SelectTrigger id="vehicleType">
+                                                    <SelectValue placeholder="Select type" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="car">Car</SelectItem>
+                                                    <SelectItem value="motorcycle">Motorcycle</SelectItem>
+                                                    <SelectItem value="truck">Truck</SelectItem>
+                                                    <SelectItem value="suv">SUV</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="status">Registration Status</Label>
+                                            <Select>
+                                                <SelectTrigger id="status">
+                                                    <SelectValue placeholder="Select status" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="active">Active</SelectItem>
+                                                    <SelectItem value="expiring">Expiring Soon</SelectItem>
+                                                    <SelectItem value="expired">Expired</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="owner">Owner</Label>
+                                            <Input id="owner" placeholder="Filter by owner name" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Expiry Date Range</Label>
+                                            <div className="flex space-x-2">
+                                                <Input type="date" placeholder="Start date" />
+                                                <Input type="date" placeholder="End date" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-end space-x-2">
+                                        <Button variant="outline" onClick={() => console.log('Reset filters')}>Reset</Button>
+                                        <Button onClick={() => console.log('Apply filters')}>Apply Filters</Button>
+                                    </div>
+                                </SheetContent>
+                            </Sheet>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline">
+                                        Columns <ChevronDown className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    {table
+                                        .getAllColumns()
+                                        .filter((column) => column.getCanHide())
+                                        .map((column) => {
+                                            return (
+                                                <DropdownMenuCheckboxItem
+                                                    key={column.id}
+                                                    className="capitalize"
+                                                    checked={column.getIsVisible()}
+                                                    onCheckedChange={(value) =>
+                                                        column.toggleVisibility(!!value)
+                                                    }
+                                                >
+                                                    {column.id}
+                                                </DropdownMenuCheckboxItem>
+                                            )
+                                        })}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    </div>
+                    <div className="rounded-md border">
+                        <Table>
+                            <TableHeader>
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <TableRow key={headerGroup.id}>
+                                        {headerGroup.headers.map((header) => {
+                                            return (
+                                                <TableHead key={header.id}>
+                                                    {header.isPlaceholder
+                                                        ? null
+                                                        : flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )}
+                                                </TableHead>
+                                            )
+                                        })}
+                                    </TableRow>
+                                ))}
+                            </TableHeader>
+                            <TableBody>
+                                {table.getRowModel().rows?.length ? (
+                                    table.getRowModel().rows.map((row) => (
+                                        <TableRow
+                                            key={row.id}
+                                            data-state={row.getIsSelected() && "selected"}
+                                        >
+                                            {row.getVisibleCells().map((cell) => (
+                                                <TableCell key={cell.id}>
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={columns.length} className="h-24 text-center">
+                                            No results.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    <div className="flex items-center justify-between space-x-2 py-4">
+                        <div className="flex-1 text-sm text-muted-foreground">
+                            {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                            {table.getFilteredRowModel().rows.length} row(s) selected.
+                        </div>
+                        <div className="space-x-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => table.previousPage()}
+                                disabled={!table.getCanPreviousPage()}
+                            >
+                                Previous
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => table.nextPage()}
+                                disabled={!table.getCanNextPage()}
+                            >
+                                Next
+                            </Button>
+                        </div>
+                    </div>
+                    {selectedVehicle && (
+                        <Card className="mt-4">
+                            <CardHeader>
+                                <CardTitle>Vehicle Details</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <Label>Registration Number</Label>
+                                        <div>{selectedVehicle.registrationNumber}</div>
+                                    </div>
+                                    <div>
+                                        <Label>Vehicle Type</Label>
+                                        <div>{selectedVehicle.type}</div>
+                                    </div>
+                                    <div>
+                                        <Label>Brand</Label>
+                                        <div>{selectedVehicle.brand}</div>
+                                    </div>
+                                    <div>
+                                        <Label>Owner</Label>
+                                        <div>{selectedVehicle.owner}</div>
+                                    </div>
+                                    <div>
+                                        <Label>Status</Label>
+                                        <div>{selectedVehicle.status}</div>
+                                    </div>
+                                    <div>
+                                        <Label>Expiry Date</Label>
+                                        <div>{selectedVehicle.expiryDate}</div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="flex justify-end space-x-2">
-                                <Button variant="outline" onClick={() => console.log('Reset filters')}>Reset</Button>
-                                <Button onClick={() => console.log('Apply filters')}>Apply Filters</Button>
-                            </div>
-                        </SheetContent>
-                    </Sheet>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline">
-                                Columns <ChevronDown className="ml-2 h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            {table
-                                .getAllColumns()
-                                .filter((column) => column.getCanHide())
-                                .map((column) => {
-                                    return (
-                                        <DropdownMenuCheckboxItem
-                                            key={column.id}
-                                            className="capitalize"
-                                            checked={column.getIsVisible()}
-                                            onCheckedChange={(value) =>
-                                                column.toggleVisibility(!!value)
-                                            }
-                                        >
-                                            {column.id}
-                                        </DropdownMenuCheckboxItem>
-                                    )
-                                })}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                                <div className="mt-4 flex justify-end space-x-2">
+                                    <Button variant="outline" onClick={() => console.log('Edit', selectedVehicle.id)}>Edit</Button>
+                                    <Button variant="outline" className="text-red-500 hover:text-red-700" onClick={() => console.log('Delete', selectedVehicle.id)}>Delete</Button>
+                                    <Button onClick={() => router.push(`/dashboard/vehicles/${selectedVehicle.id}`)}>View Full Details</Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
-            </div>
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </TableHead>
-                                    )
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-            <div className="flex items-center justify-between space-x-2 py-4">
-                <div className="flex-1 text-sm text-muted-foreground">
-                    {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                    {table.getFilteredRowModel().rows.length} row(s) selected.
-                </div>
-                <div className="space-x-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        Previous
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        Next
-                    </Button>
-                </div>
-            </div>
-            {selectedVehicle && (
-                <Card className="mt-4">
-                    <CardHeader>
-                        <CardTitle>Vehicle Details</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label>Registration Number</Label>
-                                <div>{selectedVehicle.registrationNumber}</div>
-                            </div>
-                            <div>
-                                <Label>Vehicle Type</Label>
-                                <div>{selectedVehicle.type}</div>
-                            </div>
-                            <div>
-                                <Label>Brand</Label>
-                                <div>{selectedVehicle.brand}</div>
-                            </div>
-                            <div>
-                                <Label>Owner</Label>
-                                <div>{selectedVehicle.owner}</div>
-                            </div>
-                            <div>
-                                <Label>Status</Label>
-                                <div>{selectedVehicle.status}</div>
-                            </div>
-                            <div>
-                                <Label>Expiry Date</Label>
-                                <div>{selectedVehicle.expiryDate}</div>
-                            </div>
-                        </div>
-                        <div className="mt-4 flex justify-end space-x-2">
-                            <Button variant="outline" onClick={() => console.log('Edit', selectedVehicle.id)}>Edit</Button>
-                            <Button variant="outline" className="text-red-500 hover:text-red-700" onClick={() => console.log('Delete', selectedVehicle.id)}>Delete</Button>
-                            <Button onClick={() => router.push(`/dashboard/vehicles/${selectedVehicle.id}`)}>View Full Details</Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-        </div>
+            </CardContent>
+        </Card>
     )
 }
