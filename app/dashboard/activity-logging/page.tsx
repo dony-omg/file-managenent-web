@@ -81,7 +81,7 @@ export default function ActivityLogging() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full"
-                            icon={<Search className="h-4 w-4 opacity-50" />}
+                        // icon={<Search className="h-4 w-4 opacity-50" />}
                         />
                     </div>
                     {/* <Select value={actionFilter || ''} onValueChange={setActionFilter}>
@@ -106,7 +106,7 @@ export default function ActivityLogging() {
                             <Calendar
                                 mode="single"
                                 selected={dateFilter || undefined}
-                                onSelect={setDateFilter}
+                                // onSelect={setDateFilter}
                                 initialFocus
                             />
                         </PopoverContent>
