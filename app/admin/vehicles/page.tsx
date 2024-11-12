@@ -211,7 +211,7 @@ export default function VehicleList() {
                             </Button>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <Button onClick={() => router.push('/dashboard/vehicles/create')}>
+                            <Button onClick={() => router.push('/admin/vehicles/create')}>
                                 <Plus className="mr-2 h-4 w-4" />
                                 Add Document
                             </Button>
@@ -406,7 +406,7 @@ export default function VehicleList() {
                                 <div className="mt-4 flex justify-end space-x-2">
                                     <Button variant="outline" onClick={() => console.log('Edit', selectedVehicle.id)}>Edit</Button>
                                     <Button variant="outline" className="text-red-500 hover:text-red-700" onClick={() => console.log('Delete', selectedVehicle.id)}>Delete</Button>
-                                    <Button onClick={() => router.push(`/dashboard/vehicles/${selectedVehicle.id}`)}>View Full Details</Button>
+                                    <Button onClick={() => router.push(`/admin/vehicles/${selectedVehicle.id}`)}>View Full Details</Button>
                                 </div>
                             </CardContent>
                         </Card>
