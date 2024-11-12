@@ -59,15 +59,15 @@ const data = {
             items: [
                 {
                     title: "Overview",
-                    url: "/dashboard",
+                    url: "/admin",
                 },
                 {
                     title: "Registration",
-                    url: "/dashboard/vehicles",
+                    url: "/admin/vehicles",
                 },
                 {
                     title: "Create",
-                    url: "/dashboard/vehicles/create",
+                    url: "/admin/vehicles/create",
                 },
             ],
         },
@@ -82,11 +82,11 @@ const data = {
                 },
                 {
                     title: "Members",
-                    url: "/dashboard/user",
+                    url: "/admin/user",
                 },
                 {
                     title: "Activity Logging",
-                    url: "/dashboard/activity-logging",
+                    url: "/admin/activity-logging",
                 }
             ],
         },
