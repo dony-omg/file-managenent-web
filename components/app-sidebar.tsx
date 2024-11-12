@@ -62,12 +62,12 @@ const data = {
                     url: "/admin",
                 },
                 {
-                    title: "Registration",
-                    url: "/admin/vehicles",
+                    title: "File Management",
+                    url: "/admin/file",
                 },
                 {
-                    title: "Create",
-                    url: "/admin/vehicles/create",
+                    title: "Create New File",
+                    url: "/admin/file/create",
                 },
             ],
         },

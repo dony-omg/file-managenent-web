@@ -111,7 +111,7 @@ export default function CreateVehicle() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Create New Vehicle</CardTitle>
+                <CardTitle>Create New Vehicle Registration</CardTitle>
                 <CardDescription>Enter the details of the new vehicle to add it to the system.</CardDescription>
             </CardHeader>
             <CardContent>
