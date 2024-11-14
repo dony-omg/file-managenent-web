@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -11,38 +11,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Pencil, Trash2, UserPlus } from 'lucide-react'
 
 interface User {
-    id: string
-    name: string
+    user_id: string
+    username: string
     email: string
     role: 'admin' | 'user'
 }
 
-// Mock data
-const mockUsers: User[] = [
-    { id: '1', name: 'John Doe', email: 'john@example.com', role: 'admin' },
-    { id: '2', name: 'Jane Smith', email: 'jane@example.com', role: 'user' },
-    { id: '3', name: 'Bob Johnson', email: 'bob@example.com', role: 'user' },
-    { id: '4', name: 'Alice Brown', email: 'alice@example.com', role: 'admin' },
-    { id: '5', name: 'Charlie Davis', email: 'charlie@example.com', role: 'user' },
-]
+// // Mock data
+// const mockUsers: User[] = [
+//     { id: '1', name: 'John Doe', email: 'john@example.com', role: 'admin' },
+//     { id: '2', name: 'Jane Smith', email: 'jane@example.com', role: 'user' },
+//     { id: '3', name: 'Bob Johnson', email: 'bob@example.com', role: 'user' },
+//     { id: '4', name: 'Alice Brown', email: 'alice@example.com', role: 'admin' },
+//     { id: '5', name: 'Charlie Davis', email: 'charlie@example.com', role: 'user' },
+// ]
 
-export default function UserTable() {
-    const [users, setUsers] = useState<User[]>([])
+export default function UserTable({ users }: { users: User[] }) {
+    // const [users, setUsers] = useState<User[]>([])
     const [isAddUserOpen, setIsAddUserOpen] = useState(false)
     const [isEditUserOpen, setIsEditUserOpen] = useState(false)
     const [currentUser, setCurrentUser] = useState<User | null>(null)
     const [newUser, setNewUser] = useState({ name: '', email: '', role: 'user' as 'admin' | 'user' })
 
-    useEffect(() => {
-        // Simulating API call with mock data
-        setUsers(mockUsers)
-    }, [])
-
-    const fetchUsers = async () => {
-        // In a real application, this would be an API call
-        // For now, we'll just use our mock data
-        setUsers(mockUsers)
-    }
 
     const handleAddUser = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -50,7 +40,7 @@ export default function UserTable() {
             // Simulating API call
             const newId = (users.length + 1).toString()
             const addedUser = { ...newUser, id: newId }
-            setUsers([...users, addedUser])
+            // setUsers([...users, addedUser])
             setIsAddUserOpen(false)
             setNewUser({ name: '', email: '', role: 'user' })
             // toast({
@@ -74,7 +64,6 @@ export default function UserTable() {
             const updatedUsers = users.map(user =>
                 user.id === currentUser.id ? currentUser : user
             )
-            setUsers(updatedUsers)
             setIsEditUserOpen(false)
             setCurrentUser(null)
             // toast({
@@ -95,7 +84,6 @@ export default function UserTable() {
         try {
             // Simulating API call
             const updatedUsers = users.filter(user => user.id !== id)
-            setUsers(updatedUsers)
             // toast({
             //     title: "Success",
             //     description: "User deleted successfully.",
@@ -178,8 +166,8 @@ export default function UserTable() {
                     </TableHeader>
                     <TableBody>
                         {users.map((user) => (
-                            <TableRow key={user.id}>
-                                <TableCell>{user.name}</TableCell>
+                            <TableRow key={user.user_id}>
+                                <TableCell>{user.username}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>{user.role}</TableCell>
                                 <TableCell className="text-right">
