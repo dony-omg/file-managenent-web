@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-// import { toast } from "@/components/ui/use-toast"
-import { Pencil, Trash2, UserPlus } from 'lucide-react'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useToast } from '@/hooks/use-toast'
+import { createClient } from '@/utils/supabase/client'
+import { Pencil, Trash2, User, UserPlus } from 'lucide-react'
+import { useState } from 'react'
+import UserCreateForm from './form/UserCreateForm'
+import { Loader2 } from 'lucide-react'
 
 interface User {
     user_id: string
@@ -27,63 +27,60 @@ interface User {
 // ]
 
 export default function UserTable({ users }: { users: User[] }) {
-    // const [users, setUsers] = useState<User[]>([])
+    const supabase = createClient()
+    const { toast } = useToast()
+
     const [isAddUserOpen, setIsAddUserOpen] = useState(false)
-    const [isEditUserOpen, setIsEditUserOpen] = useState(false)
-    const [currentUser, setCurrentUser] = useState<User | null>(null)
-    const [newUser, setNewUser] = useState({ name: '', email: '', role: 'user' as 'admin' | 'user' })
+    const [isLoading, setIsLoading] = useState(false)
 
 
-    const handleAddUser = async (e: React.FormEvent) => {
-        e.preventDefault()
+    const handleAddUser = async (formData: { email: string; username: string; role: 'admin' | 'user' }) => {
+        setIsLoading(true)
         try {
-            // Simulating API call
-            const newId = (users.length + 1).toString()
-            const addedUser = { ...newUser, id: newId }
-            // setUsers([...users, addedUser])
+
+            const { error } = await supabase.from('users').insert([
+                {
+                    email: formData.email,
+                    password_hash: 'admin',
+                    username: formData.username,
+                    role: formData.role,
+                }
+            ])
+            if (error) {
+                console.log(error)
+                toast({
+                    title: "Error",
+                    description: error.message || "Failed to add user. Please try again.",
+                    variant: "destructive",
+                })
+            }
+
             setIsAddUserOpen(false)
-            setNewUser({ name: '', email: '', role: 'user' })
-            // toast({
-            //     title: "Success",
-            //     description: "User added successfully.",
-            // })
+            toast({
+                title: "Success",
+                description: "User added successfully.",
+            })
+            window.location.reload()
         } catch (error) {
-            // toast({
-            //     title: "Error",
-            //     description: "Failed to add user. Please try again.",
-            //     variant: "destructive",
-            // })
+            toast({
+                title: "Error",
+                description: "Failed to add user. Please try again.",
+                variant: "destructive",
+            })
+        } finally {
+            setIsLoading(false)
         }
     }
 
     const handleEditUser = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (!currentUser) return
-        try {
-            // Simulating API call
-            const updatedUsers = users.map(user =>
-                user.id === currentUser.id ? currentUser : user
-            )
-            setIsEditUserOpen(false)
-            setCurrentUser(null)
-            // toast({
-            //     title: "Success",
-            //     description: "User updated successfully.",
-            // })
-        } catch (error) {
-            // toast({
-            //     title: "Error",
-            //     description: "Failed to update user. Please try again.",
-            //     variant: "destructive",
-            // })
-        }
+
     }
 
     const handleDeleteUser = async (id: string) => {
         if (!confirm('Are you sure you want to delete this user?')) return
         try {
             // Simulating API call
-            const updatedUsers = users.filter(user => user.id !== id)
+            // const updatedUsers = users.filter(user => user.id !== id)
             // toast({
             //     title: "Success",
             //     description: "User deleted successfully.",
@@ -106,8 +103,12 @@ export default function UserTable({ users }: { users: User[] }) {
                 <div className="flex justify-between items-center mb-5">
                     <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
                         <DialogTrigger asChild>
-                            <Button className="flex items-center gap-2">
-                                <UserPlus className="h-4 w-4" />
+                            <Button className="flex items-center gap-2" disabled={isLoading}>
+                                {isLoading ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <UserPlus className="h-4 w-4" />
+                                )}
                                 Add User
                             </Button>
                         </DialogTrigger>
@@ -115,43 +116,7 @@ export default function UserTable({ users }: { users: User[] }) {
                             <DialogHeader>
                                 <DialogTitle>Add New User</DialogTitle>
                             </DialogHeader>
-                            <form onSubmit={handleAddUser} className="space-y-4">
-                                <div>
-                                    <Label htmlFor="name">Name</Label>
-                                    <Input
-                                        id="name"
-                                        value={newUser.name}
-                                        onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        value={newUser.email}
-                                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <Label htmlFor="role">Role</Label>
-                                    <Select
-                                        value={newUser.role}
-                                        onValueChange={(value: 'admin' | 'user') => setNewUser({ ...newUser, role: value })}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a role" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="user">User</SelectItem>
-                                            <SelectItem value="admin">Admin</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <Button type="submit" className="w-full">Add User</Button>
-                            </form>
+                            <UserCreateForm handleAddUser={handleAddUser} isLoading={isLoading} />
                         </DialogContent>
                     </Dialog>
                 </div>
@@ -175,8 +140,8 @@ export default function UserTable({ users }: { users: User[] }) {
                                         variant="ghost"
                                         size="icon"
                                         onClick={() => {
-                                            setCurrentUser(user)
-                                            setIsEditUserOpen(true)
+                                            // setCurrentUser(user)
+                                            // setIsEditUserOpen(true)
                                         }}
                                     >
                                         <Pencil className="h-4 w-4" />
@@ -185,7 +150,7 @@ export default function UserTable({ users }: { users: User[] }) {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        onClick={() => handleDeleteUser(user.id)}
+                                    // onClick={() => handleDeleteUser(user.id)}
                                     >
                                         <Trash2 className="h-4 w-4" />
                                         <span className="sr-only">Delete user</span>
@@ -195,52 +160,6 @@ export default function UserTable({ users }: { users: User[] }) {
                         ))}
                     </TableBody>
                 </Table>
-                <Dialog open={isEditUserOpen} onOpenChange={setIsEditUserOpen}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Edit User</DialogTitle>
-                        </DialogHeader>
-                        {currentUser && (
-                            <form onSubmit={handleEditUser} className="space-y-4">
-                                <div>
-                                    <Label htmlFor="edit-name">Name</Label>
-                                    <Input
-                                        id="edit-name"
-                                        value={currentUser.name}
-                                        onChange={(e) => setCurrentUser({ ...currentUser, name: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <Label htmlFor="edit-email">Email</Label>
-                                    <Input
-                                        id="edit-email"
-                                        type="email"
-                                        value={currentUser.email}
-                                        onChange={(e) => setCurrentUser({ ...currentUser, email: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <Label htmlFor="edit-role">Role</Label>
-                                    <Select
-                                        value={currentUser.role}
-                                        onValueChange={(value: 'admin' | 'user') => setCurrentUser({ ...currentUser, role: value })}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a role" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="user">User</SelectItem>
-                                            <SelectItem value="admin">Admin</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <Button type="submit" className="w-full">Update User</Button>
-                            </form>
-                        )}
-                    </DialogContent>
-                </Dialog>
             </div>
         </div>
     )
