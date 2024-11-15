@@ -78,19 +78,34 @@ export default function UserTable({ users }: { users: User[] }) {
 
     const handleDeleteUser = async (id: string) => {
         if (!confirm('Are you sure you want to delete this user?')) return
+
+        setIsLoading(true)
+
         try {
-            // Simulating API call
-            // const updatedUsers = users.filter(user => user.id !== id)
-            // toast({
-            //     title: "Success",
-            //     description: "User deleted successfully.",
-            // })
+            const { error } = await supabase.from('users').delete().eq('user_id', id)
+
+            if (error) {
+                toast({
+                    title: "Error",
+                    description: error.message || "Failed to delete user. Please try again.",
+                    variant: "destructive",
+                })
+                return
+            }
+
+            toast({
+                title: "Success",
+                description: "User deleted successfully.",
+            })
+            window.location.reload()
         } catch (error) {
-            // toast({
-            //     title: "Error",
-            //     description: "Failed to delete user. Please try again.",
-            //     variant: "destructive",
-            // })
+            toast({
+                title: "Error",
+                description: "Failed to delete user. Please try again.",
+                variant: "destructive",
+            })
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -130,34 +145,64 @@ export default function UserTable({ users }: { users: User[] }) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {users.map((user) => (
-                            <TableRow key={user.user_id}>
-                                <TableCell>{user.username}</TableCell>
-                                <TableCell>{user.email}</TableCell>
-                                <TableCell>{user.role}</TableCell>
-                                <TableCell className="text-right">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => {
-                                            // setCurrentUser(user)
-                                            // setIsEditUserOpen(true)
-                                        }}
-                                    >
-                                        <Pencil className="h-4 w-4" />
-                                        <span className="sr-only">Edit user</span>
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                    // onClick={() => handleDeleteUser(user.id)}
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                        <span className="sr-only">Delete user</span>
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                        {isLoading ? (
+                            // Loading rows
+                            Array.from({ length: 5 }).map((_, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>
+                                        <div className="h-4 w-32 animate-pulse rounded bg-gray-200" />
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="h-4 w-48 animate-pulse rounded bg-gray-200" />
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <div className="h-8 w-8 animate-pulse rounded bg-gray-200" />
+                                            <div className="h-8 w-8 animate-pulse rounded bg-gray-200" />
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            // Actual data rows
+                            users.map((user) => (
+                                <TableRow key={user.user_id}>
+                                    <TableCell>{user.username}</TableCell>
+                                    <TableCell>{user.email}</TableCell>
+                                    <TableCell>{user.role}</TableCell>
+                                    <TableCell className="text-right">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => {
+                                                // setCurrentUser(user)
+                                                // setIsEditUserOpen(true)
+                                            }}
+                                            disabled={isLoading}
+                                        >
+                                            <Pencil className="h-4 w-4" />
+                                            <span className="sr-only">Edit user</span>
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => handleDeleteUser(user.user_id)}
+                                            disabled={isLoading}
+                                        >
+                                            {isLoading ? (
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <Trash2 className="h-4 w-4" />
+                                            )}
+                                            <span className="sr-only">Delete user</span>
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
                     </TableBody>
                 </Table>
             </div>
