@@ -9,7 +9,8 @@ import { Pencil, Trash2, User, UserPlus } from 'lucide-react'
 import { useState } from 'react'
 import UserCreateForm from './form/UserCreateForm'
 import { Loader2 } from 'lucide-react'
-import { EditUserDialog } from "./edit-user-dialog"
+import { EditUserDialog, userFormSchema } from "./edit-user-dialog"
+import { z } from "zod"
 
 interface User {
     user_id: string
