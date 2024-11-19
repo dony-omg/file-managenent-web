@@ -1,4 +1,5 @@
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import UserTable from './table'
 import { createClient } from '@/utils/supabase/server'
 
@@ -17,6 +18,13 @@ export default async function Page() {
 
 
     return (
-        <UserTable users={users} />
+        <Card>
+            <CardHeader>
+                <CardTitle>Users</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <UserTable users={users} />
+            </CardContent>
+        </Card>
     )
 }
