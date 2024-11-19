@@ -106,180 +106,191 @@ export default function NewDocumentForm() {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <FormField
-                    control={form.control}
-                    name="vehicleId"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Vehicle ID</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Enter vehicle ID" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="ownerName"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Owner Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Enter owner's name" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="vehicleType"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Vehicle Type</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a vehicle type" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="car">Car</SelectItem>
-                                    <SelectItem value="motorcycle">Motorcycle</SelectItem>
-                                    <SelectItem value="truck">Truck</SelectItem>
-                                    <SelectItem value="bus">Bus</SelectItem>
-                                    <SelectItem value="other">Other</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="registrationStatus"
-                    render={({ field }) => (
-                        <FormItem className="space-y-3">
-                            <FormLabel>Registration Status</FormLabel>
-                            <FormControl>
-                                <RadioGroup
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                    className="flex flex-col space-y-1"
-                                >
-                                    <FormItem className="flex items-center space-x-3 space-y-0">
-                                        <FormControl>
-                                            <RadioGroupItem value="Active" />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">
-                                            Active
-                                        </FormLabel>
-                                    </FormItem>
-                                    <FormItem className="flex items-center space-x-3 space-y-0">
-                                        <FormControl>
-                                            <RadioGroupItem value="Pending" />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">
-                                            Pending
-                                        </FormLabel>
-                                    </FormItem>
-                                    <FormItem className="flex items-center space-x-3 space-y-0">
-                                        <FormControl>
-                                            <RadioGroupItem value="Expired" />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">
-                                            Expired
-                                        </FormLabel>
-                                    </FormItem>
-                                </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="inspectionDate"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                            <FormLabel>Inspection Date</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
+                <div className="grid grid-cols-2 gap-6">
+                    {/* Column 1 */}
+                    <div className="space-y-8">
+                        <FormField
+                            control={form.control}
+                            name="vehicleId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Mã Số Xe</FormLabel>
                                     <FormControl>
-                                        <Button
-                                            variant={"outline"}
-                                            className={`w-[240px] pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
-                                        >
-                                            {field.value ? (
-                                                format(field.value, "PPP")
-                                            ) : (
-                                                <span>Pick a date</span>
-                                            )}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
+                                        <Input placeholder="Nhập mã số xe" {...field} />
                                     </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={field.value}
-                                        onSelect={field.onChange}
-                                        disabled={(date) =>
-                                            date > new Date() || date < new Date("1900-01-01")
-                                        }
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="expirationDate"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                            <FormLabel>Expiration Date</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="ownerName"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Tên Chủ Sở Hữu</FormLabel>
                                     <FormControl>
-                                        <Button
-                                            variant={"outline"}
-                                            className={`w-[240px] pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
-                                        >
-                                            {field.value ? (
-                                                format(field.value, "PPP")
-                                            ) : (
-                                                <span>Pick a date</span>
-                                            )}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
+                                        <Input placeholder="Nhập tên chủ sở hữu" {...field} />
                                     </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={field.value}
-                                        onSelect={field.onChange}
-                                        disabled={(date) =>
-                                            date < new Date()
-                                        }
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="vehicleType"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Loại Xe</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Chọn loại xe" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="car">Ô tô</SelectItem>
+                                            <SelectItem value="motorcycle">Xe máy</SelectItem>
+                                            <SelectItem value="truck">Xe tải</SelectItem>
+                                            <SelectItem value="bus">Xe buýt</SelectItem>
+                                            <SelectItem value="other">Khác</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    {/* Column 2 */}
+                    <div className="space-y-8">
+                        <FormField
+                            control={form.control}
+                            name="registrationStatus"
+                            render={({ field }) => (
+                                <FormItem className="space-y-3">
+                                    <FormLabel>Trạng Thái Đăng Ký</FormLabel>
+                                    <FormControl>
+                                        <RadioGroup
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                            className="flex flex-col space-y-1"
+                                        >
+                                            <FormItem className="flex items-center space-x-3 space-y-0">
+                                                <FormControl>
+                                                    <RadioGroupItem value="Active" />
+                                                </FormControl>
+                                                <FormLabel className="font-normal">
+                                                    Đang hoạt động
+                                                </FormLabel>
+                                            </FormItem>
+                                            <FormItem className="flex items-center space-x-3 space-y-0">
+                                                <FormControl>
+                                                    <RadioGroupItem value="Pending" />
+                                                </FormControl>
+                                                <FormLabel className="font-normal">
+                                                    Đang chờ
+                                                </FormLabel>
+                                            </FormItem>
+                                            <FormItem className="flex items-center space-x-3 space-y-0">
+                                                <FormControl>
+                                                    <RadioGroupItem value="Expired" />
+                                                </FormControl>
+                                                <FormLabel className="font-normal">
+                                                    Hết hạn
+                                                </FormLabel>
+                                            </FormItem>
+                                        </RadioGroup>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="inspectionDate"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col">
+                                    <FormLabel>Ngày Kiểm Định</FormLabel>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <FormControl>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={`w-[240px] pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
+                                                >
+                                                    {field.value ? (
+                                                        format(field.value, "PPP")
+                                                    ) : (
+                                                        <span>Chọn ngày</span>
+                                                    )}
+                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                </Button>
+                                            </FormControl>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                selected={field.value}
+                                                onSelect={field.onChange}
+                                                disabled={(date) =>
+                                                    date > new Date() || date < new Date("1900-01-01")
+                                                }
+                                                initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="expirationDate"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col">
+                                    <FormLabel>Ngày Hết Hạn</FormLabel>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <FormControl>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={`w-[240px] pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
+                                                >
+                                                    {field.value ? (
+                                                        format(field.value, "PPP")
+                                                    ) : (
+                                                        <span>Chọn ngày</span>
+                                                    )}
+                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                </Button>
+                                            </FormControl>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                selected={field.value}
+                                                onSelect={field.onChange}
+                                                disabled={(date) =>
+                                                    date < new Date()
+                                                }
+                                                initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                </div>
+
+                {/* Full width fields */}
                 <FormField
                     control={form.control}
                     name="documentImage"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Document Image</FormLabel>
+                            <FormLabel>Hình Ảnh Tài Liệu</FormLabel>
                             <FormControl>
                                 <Input
                                     type="file"
@@ -291,21 +302,21 @@ export default function NewDocumentForm() {
                                 />
                             </FormControl>
                             <FormDescription>
-                                Upload an image of the vehicle document (max 5MB).
+                                Tải lên hình ảnh tài liệu xe (tối đa 5MB).
                             </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
+
                 <div className="flex justify-end space-x-4">
                     <Button variant="outline" onClick={() => router.push('/admin/documents')}>
-                        Cancel
+                        Hủy
                     </Button>
                     <Button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? 'Saving...' : 'Save'}
+                        {isSubmitting ? 'Đang lưu...' : 'Lưu'}
                     </Button>
                 </div>
             </form>
         </Form>
     )
-}

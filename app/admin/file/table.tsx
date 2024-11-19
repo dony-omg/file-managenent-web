@@ -36,7 +36,6 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -97,24 +96,24 @@ export default function VehicleList() {
     const columns: ColumnDef<Vehicle>[] = [
         {
             accessorKey: "registrationNumber",
-            header: "Registration Number",
+            header: "Số Đăng Ký",
             cell: ({ row }) => <div className="font-medium">{row.getValue("registrationNumber")}</div>,
         },
         {
             accessorKey: "type",
-            header: "Vehicle Type",
+            header: "Loại Xe",
         },
         {
             accessorKey: "brand",
-            header: "Brand",
+            header: "Thương Hiệu",
         },
         {
             accessorKey: "owner",
-            header: "Owner",
+            header: "Chủ Sở Hữu",
         },
         {
             accessorKey: "status",
-            header: "Status",
+            header: "Trạng Thái",
             cell: ({ row }) => {
                 const status = row.getValue("status") as string
                 return (
@@ -126,14 +125,16 @@ export default function VehicleList() {
                         {status === 'active' && <CheckCircle className="w-4 h-4 mr-1" />}
                         {status === 'expiring' && <AlertTriangle className="w-4 h-4 mr-1" />}
                         {status === 'expired' && <X className="w-4 h-4 mr-1" />}
-                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                        {status === 'active' ? 'Đang hoạt động' :
+                            status === 'expiring' ? 'Sắp hết hạn' :
+                                'Đã hết hạn'}
                     </Badge>
                 )
             },
         },
         {
             accessorKey: "expiryDate",
-            header: "Expiry Date",
+            header: "Ngày Hết Hạn",
         },
         {
             id: "actions",
@@ -148,18 +149,18 @@ export default function VehicleList() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuLabel>Thao Tác</DropdownMenuLabel>
                             <DropdownMenuItem onClick={() => setSelectedVehicle(vehicle)}>
                                 <Eye className="mr-2 h-4 w-4" />
-                                View details
+                                Xem chi tiết
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => console.log('Edit', vehicle.id)}>
                                 <Pencil className="mr-2 h-4 w-4" />
-                                Edit
+                                Chỉnh sửa
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => console.log('Delete', vehicle.id)}>
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
+                                Xóa
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -190,15 +191,15 @@ export default function VehicleList() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Document Registration</CardTitle>
-                <CardDescription>Enter the details of the new vehicle to add it to the system.</CardDescription>
+                <CardTitle>Quản Lý Tài Liệu</CardTitle>
+                <CardDescription>Nhập thông tin tài liệu mới để thêm vào hệ thống.</CardDescription>
             </CardHeader>
             <CardContent>
                 <div>
                     <div className="flex justify-between items-center mb-4">
                         <div className="flex items-center space-x-2 w-full">
                             <Input
-                                placeholder="Search vehicles..."
+                                placeholder="Tìm kiếm tài liệu..."
                                 value={(table.getColumn("registrationNumber")?.getFilterValue() as string) ?? ""}
                                 onChange={(event) =>
                                     table.getColumn("registrationNumber")?.setFilterValue(event.target.value)
@@ -207,71 +208,71 @@ export default function VehicleList() {
                             />
                             <Button>
                                 <Search className="mr-2 h-4 w-4" />
-                                Search
+                                Tìm Kiếm
                             </Button>
                         </div>
                         <div className="flex items-center space-x-2">
                             <Button onClick={() => router.push('/admin/file/create')}>
                                 <Plus className="mr-2 h-4 w-4" />
-                                Add Document
+                                Thêm Tài Liệu
                             </Button>
                             <Sheet>
                                 <SheetTrigger asChild>
                                     <Button variant="outline">
                                         <SlidersHorizontal className="mr-2 h-4 w-4" />
-                                        Filter
+                                        Bộ Lọc
                                     </Button>
                                 </SheetTrigger>
                                 <SheetContent>
                                     <SheetHeader>
-                                        <SheetTitle>Filter Vehicles</SheetTitle>
+                                        <SheetTitle>Bộ Lọc Tài Liệu</SheetTitle>
                                         <SheetDescription>
-                                            Use the options below to filter the vehicle list.
+                                            Sử dụng các tùy chọn dưới đây để lọc danh sách tài liệu.
                                         </SheetDescription>
                                     </SheetHeader>
                                     <div className="grid gap-4 py-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="vehicleType">Vehicle Type</Label>
+                                            <Label htmlFor="vehicleType">Loại Xe</Label>
                                             <Select>
                                                 <SelectTrigger id="vehicleType">
-                                                    <SelectValue placeholder="Select type" />
+                                                    <SelectValue placeholder="Chọn loại xe" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="car">Car</SelectItem>
-                                                    <SelectItem value="motorcycle">Motorcycle</SelectItem>
-                                                    <SelectItem value="truck">Truck</SelectItem>
+                                                    <SelectItem value="car">Ô tô</SelectItem>
+                                                    <SelectItem value="motorcycle">Xe máy</SelectItem>
+                                                    <SelectItem value="truck">Xe tải</SelectItem>
                                                     <SelectItem value="suv">SUV</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="status">Registration Status</Label>
+                                            <Label htmlFor="status">Trạng Thái Đăng Ký</Label>
                                             <Select>
                                                 <SelectTrigger id="status">
-                                                    <SelectValue placeholder="Select status" />
+                                                    <SelectValue placeholder="Chọn trạng thái" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="active">Active</SelectItem>
-                                                    <SelectItem value="expiring">Expiring Soon</SelectItem>
-                                                    <SelectItem value="expired">Expired</SelectItem>
+                                                    <SelectItem value="active">Đang hoạt động</SelectItem>
+                                                    <SelectItem value="expiring">Sắp hết hạn</SelectItem>
+                                                    <SelectItem value="expired">Đã hết hạn</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="owner">Owner</Label>
-                                            <Input id="owner" placeholder="Filter by owner name" />
+                                            <Label htmlFor="owner">Chủ Sở Hữu</Label>
+                                            <Input id="owner" placeholder="Lọc theo tên chủ sở hữu" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>Expiry Date Range</Label>
+                                            <Label>Khoảng Thời Gian</Label>
                                             <div className="flex space-x-2">
-                                                <Input type="date" placeholder="Start date" />
-                                                <Input type="date" placeholder="End date" />
+                                                <Input type="date" placeholder="Ngày bắt đầu" />
+                                                <Input type="date" placeholder="Ngày kết thúc" />
                                             </div>
                                         </div>
                                     </div>
                                     <div className="flex justify-end space-x-2">
-                                        <Button variant="outline" onClick={() => console.log('Reset filters')}>Reset</Button>
-                                        <Button onClick={() => console.log('Apply filters')}>Apply Filters</Button>
+                                        <Button variant="outline" onClick={() => console.log('Reset filters')}>Đặt Lại</Button>
+                                        <Button onClick={() => console.log('Apply filters')}>Áp Dụng</Button>
                                     </div>
                                 </SheetContent>
                             </Sheet>
@@ -374,39 +375,39 @@ export default function VehicleList() {
                     {selectedVehicle && (
                         <Card className="mt-4">
                             <CardHeader>
-                                <CardTitle>Vehicle Details</CardTitle>
+                                <CardTitle>Chi Tiết Xe</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <Label>Registration Number</Label>
+                                        <Label>Số Đăng Ký</Label>
                                         <div>{selectedVehicle.registrationNumber}</div>
                                     </div>
                                     <div>
-                                        <Label>Vehicle Type</Label>
+                                        <Label>Loại Xe</Label>
                                         <div>{selectedVehicle.type}</div>
                                     </div>
                                     <div>
-                                        <Label>Brand</Label>
+                                        <Label>Thương Hiệu</Label>
                                         <div>{selectedVehicle.brand}</div>
                                     </div>
                                     <div>
-                                        <Label>Owner</Label>
+                                        <Label>Chủ Sở Hữu</Label>
                                         <div>{selectedVehicle.owner}</div>
                                     </div>
                                     <div>
-                                        <Label>Status</Label>
+                                        <Label>Trạng Thái</Label>
                                         <div>{selectedVehicle.status}</div>
                                     </div>
                                     <div>
-                                        <Label>Expiry Date</Label>
+                                        <Label>Ngày Hết Hạn</Label>
                                         <div>{selectedVehicle.expiryDate}</div>
                                     </div>
                                 </div>
                                 <div className="mt-4 flex justify-end space-x-2">
-                                    <Button variant="outline" onClick={() => console.log('Edit', selectedVehicle.id)}>Edit</Button>
-                                    <Button variant="outline" className="text-red-500 hover:text-red-700" onClick={() => console.log('Delete', selectedVehicle.id)}>Delete</Button>
-                                    <Button onClick={() => router.push(`/admin/vehicles/${selectedVehicle.id}`)}>View Full Details</Button>
+                                    <Button variant="outline" onClick={() => console.log('Edit', selectedVehicle.id)}>Chỉnh Sửa</Button>
+                                    <Button variant="outline" className="text-red-500 hover:text-red-700" onClick={() => console.log('Delete', selectedVehicle.id)}>Xóa</Button>
+                                    <Button onClick={() => router.push(`/admin/file/${selectedVehicle.id}`)}>Xem Chi Tiết</Button>
                                 </div>
                             </CardContent>
                         </Card>

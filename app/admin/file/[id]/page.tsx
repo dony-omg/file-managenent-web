@@ -13,14 +13,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Car, FileText, Pencil, Trash2, AlertTriangle, CheckCircle, Download, Eye, PlusCircle, Activity } from "lucide-react"
 
-// Mock data for the vehicle
+// Dữ liệu giả lập cho xe
 const vehicleData = {
     id: 1,
     registrationNumber: "ABC 123",
-    type: "Car",
+    type: "Xe hơi",
     brand: "Toyota",
     model: "Camry",
-    color: "Silver",
+    color: "Bạc",
     year: 2022,
     owner: {
         name: "John Doe",
@@ -33,20 +33,20 @@ const vehicleData = {
     }
 }
 
-// Mock data for documents
+// Dữ liệu giả lập cho tài liệu
 const initialDocuments = [
-    { id: 1, name: 'Vehicle Registration Document', type: 'pdf', uploadDate: '2023-01-01' },
-    { id: 2, 'name': 'Vehicle Insurance', type: 'pdf', uploadDate: '2023-01-01' },
-    { id: 3, name: 'Inspection Certificate', type: 'pdf', uploadDate: '2023-01-01' },
-    { id: 4, name: 'Sales Invoice', type: 'jpg', uploadDate: '2023-01-01' },
+    { id: 1, name: 'Giấy đăng ký xe', type: 'pdf', uploadDate: '2023-01-01' },
+    { id: 2, name: 'Bảo hiểm xe', type: 'pdf', uploadDate: '2023-01-01' },
+    { id: 3, name: 'Giấy chứng nhận kiểm định', type: 'pdf', uploadDate: '2023-01-01' },
+    { id: 4, name: 'Hóa đơn bán hàng', type: 'jpg', uploadDate: '2023-01-01' },
 ]
 
-// Mock data for activity history
+// Dữ liệu giả lập cho lịch sử hoạt động
 const activityHistory = [
-    { id: 1, action: 'Registration Renewed', date: '2023-01-01', details: 'Annual registration renewal' },
-    { id: 2, action: 'Document Added', date: '2023-01-01', details: 'Added new insurance document' },
-    { id: 3, action: 'Information Updated', date: '2022-12-15', details: 'Updated owner contact information' },
-    { id: 4, action: 'Initial Registration', date: '2022-01-01', details: 'Vehicle initially registered' },
+    { id: 1, action: 'Gia hạn đăng ký', date: '2023-01-01', details: 'Gia hạn đăng ký hàng năm' },
+    { id: 2, action: 'Thêm tài liệu', date: '2023-01-01', details: 'Thêm tài liệu bảo hiểm mới' },
+    { id: 3, action: 'Cập nhật thông tin', date: '2022-12-15', details: 'Cập nhật thông tin liên hệ của chủ xe' },
+    { id: 4, action: 'Đăng ký ban đầu', date: '2022-01-01', details: 'Đăng ký xe ban đầu' },
 ]
 
 export default function VehicleDetail() {
@@ -56,11 +56,11 @@ export default function VehicleDetail() {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'active':
-                return <Badge className="bg-green-500"><CheckCircle className="w-4 h-4 mr-1" /> Active</Badge>
+                return <Badge className="bg-green-500"><CheckCircle className="w-4 h-4 mr-1" /> Hoạt động</Badge>
             case 'expiring':
-                return <Badge className="bg-yellow-500"><AlertTriangle className="w-4 h-4 mr-1" /> Expiring Soon</Badge>
+                return <Badge className="bg-yellow-500"><AlertTriangle className="w-4 h-4 mr-1" /> Sắp hết hạn</Badge>
             case 'expired':
-                return <Badge className="bg-red-500"><AlertTriangle className="w-4 h-4 mr-1" /> Expired</Badge>
+                return <Badge className="bg-red-500"><AlertTriangle className="w-4 h-4 mr-1" /> Hết hạn</Badge>
             default:
                 return null
         }
@@ -72,9 +72,9 @@ export default function VehicleDetail() {
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-3xl font-bold">{vehicleData.registrationNumber}</h1>
                     <div className="flex space-x-2">
-                        <Button variant="outline"><Pencil className="w-4 h-4 mr-2" /> Edit Info</Button>
-                        <Button variant="outline" className="text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Delete Vehicle</Button>
-                        <Button>Renew Registration</Button>
+                        <Button variant="outline"><Pencil className="w-4 h-4 mr-2" /> Chỉnh sửa thông tin</Button>
+                        <Button variant="outline" className="text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Xóa xe</Button>
+                        <Button>Gia hạn đăng ký</Button>
                     </div>
                 </div>
                 {getStatusBadge(vehicleData.registration.status)}
@@ -83,20 +83,20 @@ export default function VehicleDetail() {
             <div className="grid md:grid-cols-3 gap-6">
                 <Card className="md:col-span-2">
                     <CardHeader>
-                        <CardTitle>Basic Information</CardTitle>
+                        <CardTitle>Thông tin cơ bản</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <Label>Registration Number</Label>
+                                <Label>Số đăng ký</Label>
                                 <div>{vehicleData.registrationNumber}</div>
                             </div>
                             <div>
-                                <Label>Vehicle Type</Label>
+                                <Label>Loại xe</Label>
                                 <div>{vehicleData.type}</div>
                             </div>
                             <div>
-                                <Label>Brand</Label>
+                                <Label>Hãng</Label>
                                 <div>{vehicleData.brand}</div>
                             </div>
                             <div>
@@ -104,15 +104,15 @@ export default function VehicleDetail() {
                                 <div>{vehicleData.model}</div>
                             </div>
                             <div>
-                                <Label>Color</Label>
+                                <Label>Màu sắc</Label>
                                 <div>{vehicleData.color}</div>
                             </div>
                             <div>
-                                <Label>Year of Manufacture</Label>
+                                <Label>Năm sản xuất</Label>
                                 <div>{vehicleData.year}</div>
                             </div>
                             <div className="col-span-2">
-                                <Label>Owner</Label>
+                                <Label>Chủ sở hữu</Label>
                                 <div>{vehicleData.owner.name} - {vehicleData.owner.contact}</div>
                             </div>
                         </div>
@@ -121,20 +121,20 @@ export default function VehicleDetail() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Registration Information</CardTitle>
+                        <CardTitle>Thông tin đăng ký</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">
                             <div>
-                                <Label>Registration Date</Label>
+                                <Label>Ngày đăng ký</Label>
                                 <div>{vehicleData.registration.date}</div>
                             </div>
                             <div>
-                                <Label>Expiry Date</Label>
+                                <Label>Ngày hết hạn</Label>
                                 <div>{vehicleData.registration.expiry}</div>
                             </div>
                             <div>
-                                <Label>Status</Label>
+                                <Label>Trạng </Label>
                                 <div>{getStatusBadge(vehicleData.registration.status)}</div>
                             </div>
                             <div className="flex items-center space-x-2">
@@ -143,7 +143,7 @@ export default function VehicleDetail() {
                                     checked={reminderEnabled}
                                     onCheckedChange={setReminderEnabled}
                                 />
-                                <Label htmlFor="reminder">Renewal Reminder</Label>
+                                <Label htmlFor="reminder">Nhắc nhở gia hạn</Label>
                             </div>
                         </div>
                     </CardContent>
@@ -151,16 +151,16 @@ export default function VehicleDetail() {
 
                 <Card className="md:col-span-3">
                     <CardHeader>
-                        <CardTitle>Related Documents</CardTitle>
+                        <CardTitle>Tài liệu liên quan</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Document Name</TableHead>
-                                    <TableHead>Type</TableHead>
-                                    <TableHead>Upload Date</TableHead>
-                                    <TableHead>Actions</TableHead>
+                                    <TableHead>Tên tài liệu</TableHead>
+                                    <TableHead>Loại</TableHead>
+                                    <TableHead>Ngày tải lên</TableHead>
+                                    <TableHead>Hành động</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -181,22 +181,22 @@ export default function VehicleDetail() {
                             </TableBody>
                         </Table>
                         <Button className="mt-4">
-                            <PlusCircle className="w-4 h-4 mr-2" /> Add Document
+                            <PlusCircle className="w-4 h-4 mr-2" /> Thêm tài liệu
                         </Button>
                     </CardContent>
                 </Card>
 
                 <Card className="md:col-span-3">
                     <CardHeader>
-                        <CardTitle>Registration and Activity History</CardTitle>
+                        <CardTitle>Lịch sử đăng ký và hoạt động</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Date</TableHead>
-                                    <TableHead>Action</TableHead>
-                                    <TableHead>Details</TableHead>
+                                    <TableHead>Ngày</TableHead>
+                                    <TableHead>Hành động</TableHead>
+                                    <TableHead>Chi tiết</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
