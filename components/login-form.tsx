@@ -29,6 +29,7 @@ type LoginFormProps = {
 
 export function LoginForm({ login }: LoginFormProps) {
     const { register, handleSubmit, formState: { errors } } = useForm<Inputs>();
+
     const onSubmit: SubmitHandler<Inputs> = data => {
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {

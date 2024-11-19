@@ -20,7 +20,11 @@ export default async function Page() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Users</CardTitle>
+                <CardTitle>
+                    <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                        Quản lý người dùng
+                    </h3>
+                </CardTitle>
             </CardHeader>
             <CardContent>
                 <UserTable users={users} />

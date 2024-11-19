@@ -1,127 +1,78 @@
-"use client"
-
 import * as React from "react"
-import {
-    AudioWaveform,
-    BookOpen,
-    Bot,
-    Command,
-    Frame,
-    GalleryVerticalEnd,
-    Map,
-    PieChart,
-    Settings2,
-    SquareTerminal,
-} from "lucide-react"
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { VersionSwitcher } from "@/components/version-switcher"
 import {
     Sidebar,
     SidebarContent,
-    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
     SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
     SidebarRail,
 } from "@/components/ui/sidebar"
 
 // This is sample data.
 const data = {
-    user: {
-        name: "shadcn",
-        email: "m@example.com",
-        avatar: "/avatars/shadcn.jpg",
-    },
-    // teams: [
-    //     {
-    //         name: "Acme Inc",
-    //         logo: GalleryVerticalEnd,
-    //         plan: "Enterprise",
-    //     },
-    //     {
-    //         name: "Acme Corp.",
-    //         logo: AudioWaveform,
-    //         plan: "Startup",
-    //     },
-    //     {
-    //         name: "Evil Corp.",
-    //         logo: Command,
-    //         plan: "Free",
-    //     },
-    // ],
+    versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
     navMain: [
         {
-            title: "Documentation",
+            title: "Quản lý",
             url: "#",
-            icon: SquareTerminal,
-            isActive: true,
             items: [
                 {
-                    title: "Overview",
-                    url: "/admin",
-                },
-                {
-                    title: "File Management",
+                    title: " Quản lý hồ sơ",
                     url: "/admin/file",
-                },
-                {
-                    title: "Create New File",
-                    url: "/admin/file/create",
                 },
             ],
         },
         {
-            title: "Settings",
+            title: "Thiết lập hệ thống",
             url: "#",
-            icon: Settings2,
             items: [
                 {
-                    title: "General",
-                    url: "#",
-                },
-                {
-                    title: "Members",
+                    title: "Quản lý người dùng",
                     url: "/admin/user",
                 },
                 {
-                    title: "Activity Logging",
+                    title: "Hoạt động",
                     url: "/admin/activity-logging",
-                }
+                },
             ],
-        },
-    ],
-    projects: [
-        {
-            name: "Design Engineering",
-            url: "#",
-            icon: Frame,
-        },
-        {
-            name: "Sales & Marketing",
-            url: "#",
-            icon: PieChart,
-        },
-        {
-            name: "Travel",
-            url: "#",
-            icon: Map,
         },
     ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return (
-        <Sidebar collapsible="icon" {...props}>
+        <Sidebar {...props}>
             <SidebarHeader>
-                <NavUser user={data.user} />
+                <VersionSwitcher
+                    versions={data.versions}
+                    defaultVersion={data.versions[0]}
+                />
             </SidebarHeader>
             <SidebarContent>
-                <NavMain items={data.navMain} />
-                {/* <NavProjects projects={data.projects} /> */}
+                {/* We create a SidebarGroup for each parent. */}
+                {data.navMain.map((item) => (
+                    <SidebarGroup key={item.title}>
+                        <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {item.items.map((item) => (
+                                    <SidebarMenuItem key={item.title}>
+                                        <SidebarMenuButton asChild isActive={item.isActive}>
+                                            <a href={item.url}>{item.title}</a>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                ))}
             </SidebarContent>
-            <SidebarFooter>
-            </SidebarFooter>
             <SidebarRail />
         </Sidebar>
     )

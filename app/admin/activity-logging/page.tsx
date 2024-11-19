@@ -19,13 +19,13 @@ interface ActivityLog {
     details: string
 }
 
-// Mock data
+// Mock data with Vietnamese content
 const mockActivityLogs: ActivityLog[] = [
-    { id: '1', userId: 'user1', username: 'John Doe', action: 'Login', timestamp: new Date('2023-11-05T08:30:00'), details: 'Successful login' },
-    { id: '2', userId: 'user2', username: 'Jane Smith', action: 'Create User', timestamp: new Date('2023-11-05T09:15:00'), details: 'Created user: Alice Johnson' },
-    { id: '3', userId: 'user3', username: 'Bob Brown', action: 'Update Vehicle', timestamp: new Date('2023-11-05T10:00:00'), details: 'Updated vehicle: Toyota Camry (ID: V001)' },
-    { id: '4', userId: 'user1', username: 'John Doe', action: 'Delete User', timestamp: new Date('2023-11-05T11:30:00'), details: 'Deleted user: Charlie Davis' },
-    { id: '5', userId: 'user4', username: 'Alice Johnson', action: 'View Report', timestamp: new Date('2023-11-05T13:45:00'), details: 'Viewed monthly usage report' },
+    { id: '1', userId: 'user1', username: 'Nguyễn Văn A', action: 'Đăng nhập', timestamp: new Date('2023-11-05T08:30:00'), details: 'Đăng nhập thành công' },
+    { id: '2', userId: 'user2', username: 'Trần Thị B', action: 'Tạo người dùng', timestamp: new Date('2023-11-05T09:15:00'), details: 'Đã tạo người dùng: Lê Văn C' },
+    { id: '3', userId: 'user3', username: 'Phạm Văn D', action: 'Cập nhật xe', timestamp: new Date('2023-11-05T10:00:00'), details: 'Đã cập nhật xe: Toyota Camry (ID: V001)' },
+    { id: '4', userId: 'user1', username: 'Nguyễn Văn A', action: 'Xóa người dùng', timestamp: new Date('2023-11-05T11:30:00'), details: 'Đã xóa người dùng: Trần Văn E' },
+    { id: '5', userId: 'user4', username: 'Lê Thị F', action: 'Xem báo cáo', timestamp: new Date('2023-11-05T13:45:00'), details: 'Đã xem báo cáo sử dụng hàng tháng' },
 ]
 
 export default function ActivityLogging() {
@@ -65,31 +65,29 @@ export default function ActivityLogging() {
         setFilteredLogs(result)
     }, [logs, searchTerm, actionFilter, dateFilter])
 
-    const uniqueActions = Array.from(new Set(logs.map(log => log.action)))
 
     return (
         <div className="container mx-auto rounded-lg border bg-card text-card-foreground shadow-sm">
             <div className="p-6">
-                <h1 className="text-2xl font-semibold leading-none tracking-tight">Activity Logging</h1>
+                <h1 className="text-2xl font-semibold leading-none tracking-tight">Nhật Ký Hoạt Động</h1>
             </div>
 
             <div className='p-6 pt-0'>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                     <div className="flex-1">
                         <Input
-                            placeholder="Search logs..."
+                            placeholder="Tìm kiếm nhật ký..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full"
-                        // icon={<Search className="h-4 w-4 opacity-50" />}
                         />
                     </div>
                     {/* <Select value={actionFilter || ''} onValueChange={setActionFilter}>
                     <SelectTrigger className="w-full md:w-[200px]">
-                        <SelectValue placeholder="Filter by action" />
+                        <SelectValue placeholder="Lọc theo hành động" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="">All Actions</SelectItem>
+                        <SelectItem value="">Tất cả hành động</SelectItem>
                         {uniqueActions.map(action => (
                             <SelectItem key={action} value={action}>{action}</SelectItem>
                         ))}
@@ -99,7 +97,7 @@ export default function ActivityLogging() {
                         <PopoverTrigger asChild>
                             <Button variant="outline" className="w-full md:w-[200px] justify-start text-left font-normal">
                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                {dateFilter ? format(dateFilter, 'PPP') : <span>Pick a date</span>}
+                                {dateFilter ? format(dateFilter, 'PPP') : <span>Chọn ngày</span>}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
@@ -119,17 +117,17 @@ export default function ActivityLogging() {
                                 setDateFilter(null)
                             }}
                         >
-                            Clear Filters
+                            Xóa bộ lọc
                         </Button>
                     )}
                 </div>
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>User</TableHead>
-                            <TableHead>Action</TableHead>
-                            <TableHead>Timestamp</TableHead>
-                            <TableHead>Details</TableHead>
+                            <TableHead>Người dùng</TableHead>
+                            <TableHead>Hành động</TableHead>
+                            <TableHead>Thời gian</TableHead>
+                            <TableHead>Chi tiết</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -145,7 +143,7 @@ export default function ActivityLogging() {
                 </Table>
                 {filteredLogs.length === 0 && (
                     <div className="text-center py-4 text-muted-foreground">
-                        No activity logs found matching the current filters.
+                        Không tìm thấy nhật ký hoạt động phù hợp với bộ lọc hiện tại.
                     </div>
                 )}
             </div>

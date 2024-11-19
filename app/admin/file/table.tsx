@@ -66,13 +66,13 @@ import { Label } from "@/components/ui/label"
 
 import { useRouter } from 'next/navigation'
 
-// Mock data for vehicles
+// Mock data for vehicles with Vietnamese content
 const data: Vehicle[] = [
-    { id: 1, registrationNumber: 'ABC123', type: 'Car', brand: 'Toyota', owner: 'John Doe', status: 'active', expiryDate: '2024-05-15' },
-    { id: 2, registrationNumber: 'XYZ789', type: 'Motorcycle', brand: 'Honda', owner: 'Jane Smith', status: 'expiring', expiryDate: '2023-08-30' },
-    { id: 3, registrationNumber: 'DEF456', type: 'Truck', brand: 'Ford', owner: 'Bob Johnson', status: 'expired', expiryDate: '2023-03-01' },
-    { id: 4, registrationNumber: 'GHI789', type: 'Car', brand: 'Chevrolet', owner: 'Alice Brown', status: 'active', expiryDate: '2024-11-20' },
-    { id: 5, registrationNumber: 'JKL012', type: 'SUV', brand: 'Nissan', owner: 'Charlie Davis', status: 'active', expiryDate: '2024-09-10' },
+    { id: 1, registrationNumber: 'ABC123', type: 'Ô tô', brand: 'Toyota', owner: 'Nguyễn Văn A', status: 'active', expiryDate: '2024-05-15' },
+    { id: 2, registrationNumber: 'XYZ789', type: 'Xe máy', brand: 'Honda', owner: 'Trần Thị B', status: 'expiring', expiryDate: '2023-08-30' },
+    { id: 3, registrationNumber: 'DEF456', type: 'Xe tải', brand: 'Ford', owner: 'Lê Văn C', status: 'expired', expiryDate: '2023-03-01' },
+    { id: 4, registrationNumber: 'GHI789', type: 'Ô tô', brand: 'Chevrolet', owner: 'Phạm Thị D', status: 'active', expiryDate: '2024-11-20' },
+    { id: 5, registrationNumber: 'JKL012', type: 'SUV', brand: 'Nissan', owner: 'Hoàng Văn E', status: 'active', expiryDate: '2024-09-10' },
 ]
 
 type Vehicle = {
@@ -144,7 +144,7 @@ export default function VehicleList() {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
+                                <span className="sr-only">Mở menu</span>
                                 <MoreHorizontal className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
@@ -168,7 +168,6 @@ export default function VehicleList() {
             },
         },
     ]
-
     const table = useReactTable({
         data,
         columns,
@@ -191,7 +190,11 @@ export default function VehicleList() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Quản Lý Tài Liệu</CardTitle>
+                <CardTitle>
+                    <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                        Quản Lý Tài Liệu
+                    </h3>
+                </CardTitle>
                 <CardDescription>Nhập thông tin tài liệu mới để thêm vào hệ thống.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -214,7 +217,7 @@ export default function VehicleList() {
                         <div className="flex items-center space-x-2">
                             <Button onClick={() => router.push('/admin/file/create')}>
                                 <Plus className="mr-2 h-4 w-4" />
-                                Thêm Tài Liệu
+                                Tạo hồ sơ mới
                             </Button>
                             <Sheet>
                                 <SheetTrigger asChild>

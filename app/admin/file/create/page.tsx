@@ -7,7 +7,11 @@ export default function Page() {
             <div className="w-full">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Tạo mới hồ sơ</CardTitle>
+                        <CardTitle>
+                            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                                Tạo mới hồ sơ
+                            </h3>
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <NewDocumentForm />
