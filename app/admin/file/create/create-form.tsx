@@ -108,9 +108,33 @@ export default function NewDocumentForm() {
         }
     };
 
+    const uploadFiles = async (files: File[]) => {
+        const supabase = await createClient();
+        const uploadedFiles = [];
+        for (const file of files) {
+            const { data, error } = await supabase.storage
+                .from('documents') // Replace with your storage bucket name
+                .upload(`public/${file.name}`, file);
+
+            if (error) {
+                console.error("Error uploading file:", error);
+                continue;
+            }
+
+            const fileUrl = supabase.storage.from('documents').getPublicUrl(data.path).publicURL;
+            uploadedFiles.push(fileUrl);
+        }
+        return uploadedFiles;
+    };
+
+
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             setIsSubmitting(true);
+
+            uploadFiles(selectedFiles);
+
+            return;
 
             // First, create the document record in the files table
             const documentData = {
