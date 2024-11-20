@@ -32,30 +32,28 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
+import { Textarea } from '@/components/ui/textarea'
 import { format } from 'date-fns'
 
 const formSchema = z.object({
     vehicleId: z.string().min(1, { message: 'Vehicle ID is required' }),
     ownerName: z.string().min(1, { message: 'Owner Name is required' }),
     vehicleType: z.string().min(1, { message: 'Vehicle Type is required' }),
-    registrationStatus: z.enum(['Active', 'Pending', 'Expired']),
-    inspectionDate: z.date({
-        required_error: 'Inspection Date is required',
-    }),
-    expirationDate: z.date({
-        required_error: 'Expiration Date is required',
-    }),
-    documentImage: z.instanceof(File).optional().refine(
-        (file) => {
-            if (file) {
-                return file.size <= 5000000; // 5MB in bytes
+    documentImages: z
+        .array(z.instanceof(File))
+        .optional()
+        .refine(
+            (files) => {
+                if (files) {
+                    return files.every((file) => file.size <= 5000000);
+                }
+                return true;
+            },
+            {
+                message: "Each file size should not exceed 5MB.",
             }
-            return true;
-        },
-        {
-            message: "The file size should not exceed 5MB.",
-        }
-    ),
+        ),
+    note: z.string().optional(),
 })
 
 export default function NewDocumentForm() {
@@ -69,44 +67,68 @@ export default function NewDocumentForm() {
             vehicleId: '',
             ownerName: '',
             vehicleType: '',
-            registrationStatus: 'Active',
-            inspectionDate: new Date(),
-            expirationDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
             documentImage: undefined,
+            note: '',
         },
     })
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files[0]) {
-            setSelectedFile(event.target.files[0]);
+    const [dragActive, setDragActive] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+    const handleDrag = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") {
+            setDragActive(true);
+        } else if (e.type === "dragleave") {
+            setDragActive(false);
+        }
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+
+        const files = Array.from(e.dataTransfer.files);
+        setSelectedFiles(prev => [...prev, ...files]);
+        form.setValue('documentImages', files);
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const files = Array.from(e.target.files);
+            setSelectedFiles(prev => [...prev, ...files]);
+            form.setValue('documentImages', files);
         }
     };
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        setIsSubmitting(true)
-        // Here you would typically send the form data to your backend
+        setIsSubmitting(true);
         const formData = new FormData();
+
+        // Add other form fields
         Object.entries(values).forEach(([key, value]) => {
-            if (value instanceof Date) {
-                formData.append(key, value.toISOString());
-            } else if (value !== undefined) {
+            if (value !== undefined && key !== 'documentImages') {
                 formData.append(key, value as string);
             }
         });
-        if (selectedFile) {
-            formData.append('documentImage', selectedFile);
-        }
+
+        // Add multiple files
+        selectedFiles.forEach((file, index) => {
+            formData.append(`documentImages[${index}]`, file);
+        });
+
         console.log(Object.fromEntries(formData));
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000))
         setIsSubmitting(false)
         router.push('/admin/documents') // Redirect to admin documents list page
     }
-
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid">
                     {/* Cột 1 */}
                     <div className="space-y-8">
                         <FormField
@@ -160,150 +182,78 @@ export default function NewDocumentForm() {
                             )}
                         />
                     </div>
-
-                    {/* Cột 2 */}
-                    <div className="space-y-8">
-                        <FormField
-                            control={form.control}
-                            name="registrationStatus"
-                            render={({ field }) => (
-                                <FormItem className="space-y-3">
-                                    <FormLabel>Trạng Thái Đăng Ký</FormLabel>
-                                    <FormControl>
-                                        <RadioGroup
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                            className="flex flex-col space-y-1"
-                                        >
-                                            <FormItem className="flex items-center space-x-3 space-y-0">
-                                                <FormControl>
-                                                    <RadioGroupItem value="Active" />
-                                                </FormControl>
-                                                <FormLabel className="font-normal">
-                                                    Đang hoạt động
-                                                </FormLabel>
-                                            </FormItem>
-                                            <FormItem className="flex items-center space-x-3 space-y-0">
-                                                <FormControl>
-                                                    <RadioGroupItem value="Pending" />
-                                                </FormControl>
-                                                <FormLabel className="font-normal">
-                                                    Đang chờ
-                                                </FormLabel>
-                                            </FormItem>
-                                            <FormItem className="flex items-center space-x-3 space-y-0">
-                                                <FormControl>
-                                                    <RadioGroupItem value="Expired" />
-                                                </FormControl>
-                                                <FormLabel className="font-normal">
-                                                    Hết hạn
-                                                </FormLabel>
-                                            </FormItem>
-                                        </RadioGroup>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="inspectionDate"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel>Ngày Kiểm Định</FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={`w-[240px] pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
-                                                >
-                                                    {field.value ? (
-                                                        format(field.value, "PPP")
-                                                    ) : (
-                                                        <span>Chọn ngày</span>
-                                                    )}
-                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={field.onChange}
-                                                disabled={(date) =>
-                                                    date > new Date() || date < new Date("1900-01-01")
-                                                }
-                                                initialFocus
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="expirationDate"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel>Ngày Hết Hạn</FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={`w-[240px] pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
-                                                >
-                                                    {field.value ? (
-                                                        format(field.value, "PPP")
-                                                    ) : (
-                                                        <span>Chọn ngày</span>
-                                                    )}
-                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={field.onChange}
-                                                disabled={(date) =>
-                                                    date < new Date()
-                                                }
-                                                initialFocus
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
                 </div>
-
-                {/* Trường độ rộng đầy đủ */}
                 <FormField
                     control={form.control}
-                    name="documentImage"
+                    name="documentImages"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Hình Ảnh Tài Liệu</FormLabel>
                             <FormControl>
-                                <Input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => {
-                                        handleFileChange(e);
-                                        field.onChange(e.target.files ? e.target.files[0] : null);
-                                    }}
-                                />
+                                <div
+                                    className={`border-2 border-dashed rounded-lg p-6 text-center ${dragActive ? "border-primary" : "border-gray-300"
+                                        }`}
+                                    onDragEnter={handleDrag}
+                                    onDragLeave={handleDrag}
+                                    onDragOver={handleDrag}
+                                    onDrop={handleDrop}
+                                >
+                                    <Input
+                                        type="file"
+                                        multiple
+                                        accept="image/*,.pdf,.doc,.docx"
+                                        onChange={handleFileChange}
+                                        className="hidden"
+                                        id="file-upload"
+                                    />
+                                    <label
+                                        htmlFor="file-upload"
+                                        className="cursor-pointer text-primary hover:text-primary/80"
+                                    >
+                                        <div className="flex flex-col items-center gap-2">
+                                            <span>Kéo thả file vào đây hoặc click để chọn file</span>
+                                            <span className="text-sm text-gray-500">
+                                                (Hỗ trợ nhiều file, tối đa 5MB mỗi file)
+                                            </span>
+                                        </div>
+                                    </label>
+                                    {selectedFiles.length > 0 && (
+                                        <div className="mt-4 space-y-2">
+                                            {selectedFiles.map((file, index) => (
+                                                <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                                                    <span className="text-sm">{file.name}</span>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setSelectedFiles(files => files.filter((_, i) => i !== index));
+                                                        }}
+                                                    >
+                                                        ✕
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </FormControl>
                             <FormDescription>
-                                Tải lên hình ảnh tài liệu xe (tối đa 5MB).
+                                Tải lên các tài liệu xe (tối đa 5MB mỗi file).
                             </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="note"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Ghi Chú</FormLabel>
+                            <FormControl>
+                                <Textarea placeholder="Nhập ghi chú" {...field} />
+                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}

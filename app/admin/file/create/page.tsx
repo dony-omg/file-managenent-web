@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 export default function Page() {
     return (
         <div className="flex justify-center">
-            <div className="w-full">
+            <div className="w-[600px]">
                 <Card>
                     <CardHeader>
                         <CardTitle>
