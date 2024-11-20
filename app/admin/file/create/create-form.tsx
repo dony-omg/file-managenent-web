@@ -34,6 +34,9 @@ import {
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
 import { format } from 'date-fns'
+import { createClient } from '@/utils/supabase/client'
+
+import { useToast } from "@/hooks/use-toast"
 
 const formSchema = z.object({
     vehicleId: z.string().min(1, { message: 'Vehicle ID is required' }),
@@ -58,6 +61,8 @@ const formSchema = z.object({
 
 export default function NewDocumentForm() {
     const router = useRouter()
+    const { toast } = useToast()
+
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -67,7 +72,7 @@ export default function NewDocumentForm() {
             vehicleId: '',
             ownerName: '',
             vehicleType: '',
-            documentImage: undefined,
+            documentImages: [],
             note: '',
         },
     })
@@ -104,28 +109,84 @@ export default function NewDocumentForm() {
     };
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        setIsSubmitting(true);
-        const formData = new FormData();
+        try {
+            setIsSubmitting(true);
 
-        // Add other form fields
-        Object.entries(values).forEach(([key, value]) => {
-            if (value !== undefined && key !== 'documentImages') {
-                formData.append(key, value as string);
+            // First, create the document record in the files table
+            const documentData = {
+                vehicle_id: values.vehicleId,
+                owner_name: values.ownerName,
+                vehicle_type: values.vehicleType,
+                note: values.note,
+                created_at: new Date().toISOString()
+            };
+
+            // Make API call to create document record
+            const response = await fetch('/api/file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(documentData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create document');
             }
-        });
 
-        // Add multiple files
-        selectedFiles.forEach((file, index) => {
-            formData.append(`documentImages[${index}]`, file);
-        });
+            const { data } = await response.json();
 
-        console.log(Object.fromEntries(formData));
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        setIsSubmitting(false)
-        router.push('/admin/documents') // Redirect to admin documents list page
-    }
-    return (
+            // Handle file uploads if any files were selected
+            if (selectedFiles.length > 0) {
+                const supabase = await createClient();
+
+                // Upload each file to Supabase storage
+                for (const file of selectedFiles) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `${data.id}-${Math.random()}.${fileExt}`;
+                    const filePath = `documents/${fileName}`;
+
+                    const { error: uploadError } = await supabase.storage
+                        .from('documents')
+                        .upload(filePath, file);
+
+                    if (uploadError) {
+                        throw uploadError;
+                    }
+
+                    // Update the document record with file path
+                    await fetch(`/api/file/${data.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            file_path: filePath
+                        }),
+                    });
+                }
+            }
+
+            toast({
+                title: "Success",
+                description: "Document created successfully"
+            })
+
+            router.push('/admin/documents');
+            router.refresh();
+
+        } catch (error) {
+            console.error('Error creating document:', error);
+            // Here you could add toast notification for error
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Failed to create document. Please try again."
+            })
+        } finally {
+            setIsSubmitting(false);
+        }
+    } return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <div className="grid">
