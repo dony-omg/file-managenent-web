@@ -120,7 +120,7 @@ export default function NewDocumentForm() {
             const documentData = {
                 document_id: values.documentId,
                 document_type: "vehicle",
-                // file_path: "https://www.google.com",
+                file_path: "https://www.google.com",
                 note: values.note,
             };
 
@@ -135,7 +135,6 @@ export default function NewDocumentForm() {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.log('API Error:', errorData);
                 toast({
                     variant: "destructive",
                     title: "Error",
@@ -181,10 +180,10 @@ export default function NewDocumentForm() {
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
                 description: "There was a problem with your request.",
-                // action: <ToastAction altText="Try again">Try again</ToastAction>,
+                action: <ToastAction altText="Try again">Try again</ToastAction>,
             })
 
-            // router.push('/admin/documents');
+            router.push('/admin/documents');
             // router.refresh();
 
         } catch (error) {

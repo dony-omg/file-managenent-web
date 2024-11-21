@@ -168,6 +168,7 @@ export default function VehicleList() {
             },
         },
     ]
+
     const table = useReactTable({
         data,
         columns,

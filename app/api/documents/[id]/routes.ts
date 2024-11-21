@@ -14,8 +14,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         .single();
 
     if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
-    }3
+        return NextResponse.json({ error: error?.message }, { status: 500 });
+    }
 
     return NextResponse.json({ message: 'Document updated successfully', data }, { status: 200 });
 }
