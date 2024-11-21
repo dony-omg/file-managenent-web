@@ -8,7 +8,7 @@ export async function POST(req: Request) {
         const body = await req.json()
 
         const { data, error } = await supabase
-            .from('files')
+            .from('documents')
             .insert([body])
             .select()
 

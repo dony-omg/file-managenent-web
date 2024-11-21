@@ -132,21 +132,20 @@ export default function NewDocumentForm() {
         try {
             setIsSubmitting(true);
 
-            uploadFiles(selectedFiles);
-
-            return;
 
             // First, create the document record in the files table
             const documentData = {
-                vehicle_id: values.vehicleId,
-                owner_name: values.ownerName,
-                vehicle_type: values.vehicleType,
-                note: values.note,
-                created_at: new Date().toISOString()
+                vehicle_id: 2,
+                // owner_name: values.ownerName,
+                // vehicle_type: values.vehicleType,
+                // note: values.note,
+                // created_at: new Date().toISOString()
+                document_type: "vehicle",
+                file_path: "https://www.google.com",
             };
 
             // Make API call to create document record
-            const response = await fetch('/api/file', {
+            const response = await fetch('/api/documents', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -179,7 +178,7 @@ export default function NewDocumentForm() {
                     }
 
                     // Update the document record with file path
-                    await fetch(`/api/file/${data.id}`, {
+                    await fetch(`/api/documents/${data.id}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -196,8 +195,8 @@ export default function NewDocumentForm() {
                 description: "Document created successfully"
             })
 
-            router.push('/admin/documents');
-            router.refresh();
+            // router.push('/admin/documents');
+            // router.refresh();
 
         } catch (error) {
             console.error('Error creating document:', error);
