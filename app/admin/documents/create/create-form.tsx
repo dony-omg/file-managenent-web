@@ -33,15 +33,16 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
-import { format } from 'date-fns'
 import { createClient } from '@/utils/supabase/client'
-
+import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/hooks/use-toast"
 
+
 const formSchema = z.object({
+    documentId: z.string().min(1, { message: 'Document ID is required' }),
     vehicleId: z.string().min(1, { message: 'Vehicle ID is required' }),
-    ownerName: z.string().min(1, { message: 'Owner Name is required' }),
-    vehicleType: z.string().min(1, { message: 'Vehicle Type is required' }),
+    // ownerName: z.string().optional(),
+    vehicleType: z.string().optional(),
     documentImages: z
         .array(z.instanceof(File))
         .optional()
@@ -69,8 +70,9 @@ export default function NewDocumentForm() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            documentId: '',
             vehicleId: '',
-            ownerName: '',
+            // ownerName: '',
             vehicleType: '',
             documentImages: [],
             note: '',
@@ -108,25 +110,6 @@ export default function NewDocumentForm() {
         }
     };
 
-    const uploadFiles = async (files: File[]) => {
-        const supabase = await createClient();
-        const uploadedFiles = [];
-        for (const file of files) {
-            const { data, error } = await supabase.storage
-                .from('documents') // Replace with your storage bucket name
-                .upload(`public/${file.name}`, file);
-
-            if (error) {
-                console.error("Error uploading file:", error);
-                continue;
-            }
-
-            const fileUrl = supabase.storage.from('documents').getPublicUrl(data.path).publicURL;
-            uploadedFiles.push(fileUrl);
-        }
-        return uploadedFiles;
-    };
-
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
@@ -135,13 +118,10 @@ export default function NewDocumentForm() {
 
             // First, create the document record in the files table
             const documentData = {
-                vehicle_id: 2,
-                // owner_name: values.ownerName,
-                // vehicle_type: values.vehicleType,
-                // note: values.note,
-                // created_at: new Date().toISOString()
+                document_id: values.documentId,
                 document_type: "vehicle",
-                file_path: "https://www.google.com",
+                // file_path: "https://www.google.com",
+                note: values.note,
             };
 
             // Make API call to create document record
@@ -154,7 +134,14 @@ export default function NewDocumentForm() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to create document');
+                const errorData = await response.json();
+                console.log('API Error:', errorData);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "Failed to create document. Please try again."
+                })
+                throw new Error(`Failed to create document: ${errorData.message}`);
             }
 
             const { data } = await response.json();
@@ -191,15 +178,17 @@ export default function NewDocumentForm() {
             }
 
             toast({
-                title: "Success",
-                description: "Document created successfully"
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: "There was a problem with your request.",
+                // action: <ToastAction altText="Try again">Try again</ToastAction>,
             })
 
             // router.push('/admin/documents');
             // router.refresh();
 
         } catch (error) {
-            console.error('Error creating document:', error);
+            // console.error('Error creating document:', error);
             // Here you could add toast notification for error
             toast({
                 variant: "destructive",
@@ -209,12 +198,27 @@ export default function NewDocumentForm() {
         } finally {
             setIsSubmitting(false);
         }
-    } return (
+    }
+
+    return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <div className="grid">
                     {/* Cột 1 */}
                     <div className="space-y-8">
+                        <FormField
+                            control={form.control}
+                            name="documentId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Số quản lý sổ</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Nhập mã số xe" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="vehicleId"
@@ -228,7 +232,7 @@ export default function NewDocumentForm() {
                                 </FormItem>
                             )}
                         />
-                        <FormField
+                        {/* <FormField
                             control={form.control}
                             name="ownerName"
                             render={({ field }) => (
@@ -240,7 +244,7 @@ export default function NewDocumentForm() {
                                     <FormMessage />
                                 </FormItem>
                             )}
-                        />
+                        /> */}
                         <FormField
                             control={form.control}
                             name="vehicleType"
