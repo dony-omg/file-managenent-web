@@ -12,22 +12,19 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Loader2 } from "lucide-react"
 
 type Inputs = {
     email: string;
     password: string;
 };
 
-
-
 type LoginFormProps = {
-
     login: (formData: FormData) => Promise<void>;
-
+    isLoading?: boolean;
 };
 
-
-export function LoginForm({ login }: LoginFormProps) {
+export function LoginForm({ login, isLoading = false }: LoginFormProps) {
     const { register, handleSubmit, formState: { errors } } = useForm<Inputs>();
 
     const onSubmit: SubmitHandler<Inputs> = data => {
@@ -55,6 +52,7 @@ export function LoginForm({ login }: LoginFormProps) {
                             id="email"
                             type="email"
                             placeholder="m@example.com"
+                            disabled={isLoading}
                             {...register("email", { required: "Email is required" })}
                         />
                         {errors.email && <span className="text-red-500">{errors.email.message}</span>}
@@ -69,23 +67,22 @@ export function LoginForm({ login }: LoginFormProps) {
                         <Input
                             id="password"
                             type="password"
+                            disabled={isLoading}
                             {...register("password", { required: "Password is required" })}
                         />
                         {errors.password && <span className="text-red-500">{errors.password.message}</span>}
                     </div>
-                    <Button type="submit" className="w-full">
-                        Login
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                        Login with Google
+                    <Button disabled={isLoading} type="submit" className="w-full">
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Logging in...
+                            </>
+                        ) : (
+                            'Login'
+                        )}
                     </Button>
                 </form>
-                <div className="mt-4 text-center text-sm">
-                    Don&apos;t have an account?{" "}
-                    <Link href="#" className="underline">
-                        Sign up
-                    </Link>
-                </div>
             </CardContent>
         </Card>
     );
