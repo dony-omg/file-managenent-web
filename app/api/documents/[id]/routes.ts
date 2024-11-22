@@ -3,13 +3,15 @@ import { NextResponse } from 'next/server';
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
     const documentId = parseInt(params.id);
-    const { title, content } = await req.json(); // Assuming these are the fields you want to update
+    const { file_path } = await req.json(); // Assuming these are the fields you want to update
 
+    console.log('file_path', file_path);
+    
     const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('documents')
-        .update({ title, content })
+        .update({file_path})
         .eq('id', documentId)
         .single();
 

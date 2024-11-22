@@ -164,7 +164,7 @@ export default function NewDocumentForm() {
                     }
 
                     // Update the document record with file path
-                    await fetch(`/api/documents/${data.id}`, {
+                    await fetch(`/api/documents/${data[0]?.document_id}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
