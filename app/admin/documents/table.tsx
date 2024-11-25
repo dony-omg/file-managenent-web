@@ -65,6 +65,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 
 import { useRouter } from 'next/navigation'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 // Mock data for vehicles with Vietnamese content
 // const data: Vehicle[] = [
@@ -142,29 +143,17 @@ export default function DocumentList({ data }: { data: any }) {
             cell: ({ row }) => {
                 const vehicle = row.original
                 return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Mở menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Thao Tác</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => setSelectedVehicle(vehicle)}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                Xem chi tiết
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => console.log('Edit', vehicle.id)}>
-                                <Pencil className="mr-2 h-4 w-4" />
-                                Chỉnh sửa
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => console.log('Delete', vehicle.id)}>
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Xóa
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="flex space-x-2">
+                        <Button variant="ghost" onClick={() => setSelectedVehicle(vehicle)} className="h-8 w-8 p-0">
+                            <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" onClick={() => console.log('Edit', vehicle.id)} className="h-8 w-8 p-0">
+                            <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" onClick={() => console.log('Delete', vehicle.id)} className="h-8 w-8 p-0">
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
                 )
             },
         },
@@ -378,11 +367,11 @@ export default function DocumentList({ data }: { data: any }) {
                         </div>
                     </div>
                     {selectedVehicle && (
-                        <Card className="mt-4">
-                            <CardHeader>
-                                <CardTitle>Chi Tiết Xe</CardTitle>
-                            </CardHeader>
-                            <CardContent>
+                        <Dialog open={!!selectedVehicle} onOpenChange={() => setSelectedVehicle(null)}>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Chi Tiết Xe</DialogTitle>
+                                </DialogHeader>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <Label>Số Đăng Ký</Label>
@@ -414,8 +403,8 @@ export default function DocumentList({ data }: { data: any }) {
                                     <Button variant="outline" className="text-red-500 hover:text-red-700" onClick={() => console.log('Delete', selectedVehicle.id)}>Xóa</Button>
                                     <Button onClick={() => router.push(`/admin/documents/${selectedVehicle.id}`)}>Xem Chi Tiết</Button>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </DialogContent>
+                        </Dialog>
                     )}
                 </div>
             </CardContent>
