@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -36,7 +36,15 @@ import { Textarea } from '@/components/ui/textarea'
 import { createClient } from '@/utils/supabase/client'
 import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/hooks/use-toast"
+import { Dashboard, DragDrop } from '@uppy/react'
+import Uppy from '@uppy/core'
+import XHRUpload from '@uppy/xhr-upload'
+import Webcam from '@uppy/webcam'
 
+
+// Add these imports at the top
+import '@uppy/core/dist/style.css'
+import '@uppy/dashboard/dist/style.css'
 
 const formSchema = z.object({
     documentId: z.string().min(1, { message: 'Document ID is required' }),
@@ -73,58 +81,55 @@ export default function NewDocumentForm() {
             documentId: '',
             vehicleId: '',
             // ownerName: '',
-            vehicleType: '',
+            // vehicleType: '',
             documentImages: [],
             note: '',
         },
     })
 
-    const [dragActive, setDragActive] = useState(false);
-    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    // Modify the Uppy instance configuration
+    const uppy = useMemo(() => {
+        return new Uppy({
+            restrictions: {
+                maxFileSize: 5000000,
+                allowedFileTypes: ['image/*', '.pdf', '.doc', '.docx']
+            }
+        })
+            .use(XHRUpload, {
+                endpoint: '/api/documents/upload',
+                formData: true,
+                fieldName: 'file'
+            })
+            .use(Webcam, {
+                modes: ['picture'],
+                mirror: true,
+            })
+    }, [])
 
-    const handleDrag = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.type === "dragenter" || e.type === "dragover") {
-            setDragActive(true);
-        } else if (e.type === "dragleave") {
-            setDragActive(false);
-        }
-    };
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive(false);
-
-        const files = Array.from(e.dataTransfer.files);
-        setSelectedFiles(prev => [...prev, ...files]);
-        form.setValue('documentImages', files);
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            const files = Array.from(e.target.files);
-            setSelectedFiles(prev => [...prev, ...files]);
-            form.setValue('documentImages', files);
-        }
-    };
 
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             setIsSubmitting(true);
 
+            // Upload files first to get the URLs
+            const result = await uppy.upload();
 
-            // First, create the document record in the files table
+            let filePaths: string[] = [];
+            if (result?.successful && result.successful.length > 0) {
+                filePaths = result.successful
+                    .map(file => file.response?.body?.fileUrl || '')
+                    .filter((url): url is string => typeof url === 'string');
+            }
+
+            // Create document record with actual file paths
             const documentData = {
                 document_id: values.documentId,
                 document_type: "vehicle",
-                file_path: "https://www.google.com",
+                file_path: filePaths.join(','), // Store multiple file paths as comma-separated string
                 note: values.note,
             };
 
-            // Make API call to create document record
             const response = await fetch('/api/documents', {
                 method: 'POST',
                 headers: {
@@ -139,67 +144,27 @@ export default function NewDocumentForm() {
                     variant: "destructive",
                     title: "Error",
                     description: "Failed to create document. Please try again."
-                })
+                });
                 throw new Error(`Failed to create document: ${errorData.message}`);
             }
 
-            const { data } = await response.json();
-
-            // Handle file uploads if any files were selected
-            if (selectedFiles.length > 0) {
-                const supabase = await createClient();
-
-                // Upload each file to Supabase storage
-                for (const file of selectedFiles) {
-                    const fileExt = file.name.split('.').pop();
-                    const fileName = `${data.id}-${Math.random()}.${fileExt}`;
-                    const filePath = `documents/${fileName}`;
-
-                    const { error: uploadError } = await supabase.storage
-                        .from('documents')
-                        .upload(filePath, file);
-
-                    if (uploadError) {
-                        throw uploadError;
-                    }
-
-                    // Update the document record with file path
-                    await fetch(`/api/documents/${data.id}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            file_path: filePath
-                        }),
-                    });
-                }
-            }
-
             toast({
-                variant: "destructive",
-                title: "Uh oh! Something went wrong.",
-                description: "There was a problem with your request.",
-                action: <ToastAction altText="Try again">Try again</ToastAction>,
-            })
+                title: "Success",
+                description: "Document created successfully",
+            });
 
             router.push('/admin/documents');
-            // router.refresh();
 
         } catch (error) {
-            // console.error('Error creating document:', error);
-            // Here you could add toast notification for error
             toast({
                 variant: "destructive",
                 title: "Error",
                 description: "Failed to create document. Please try again."
-            })
+            });
         } finally {
             setIsSubmitting(false);
         }
-    }
-
-    return (
+    } return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <div className="grid">
@@ -244,7 +209,7 @@ export default function NewDocumentForm() {
                                 </FormItem>
                             )}
                         /> */}
-                        <FormField
+                        {/* <FormField
                             control={form.control}
                             name="vehicleType"
                             render={({ field }) => (
@@ -267,7 +232,7 @@ export default function NewDocumentForm() {
                                     <FormMessage />
                                 </FormItem>
                             )}
-                        />
+                        /> */}
                     </div>
                 </div>
                 <FormField
@@ -277,53 +242,7 @@ export default function NewDocumentForm() {
                         <FormItem>
                             <FormLabel>Hình Ảnh Tài Liệu</FormLabel>
                             <FormControl>
-                                <div
-                                    className={`border-2 border-dashed rounded-lg p-6 text-center ${dragActive ? "border-primary" : "border-gray-300"
-                                        }`}
-                                    onDragEnter={handleDrag}
-                                    onDragLeave={handleDrag}
-                                    onDragOver={handleDrag}
-                                    onDrop={handleDrop}
-                                >
-                                    <Input
-                                        type="file"
-                                        multiple
-                                        accept="image/*,.pdf,.doc,.docx"
-                                        onChange={handleFileChange}
-                                        className="hidden"
-                                        id="file-upload"
-                                    />
-                                    <label
-                                        htmlFor="file-upload"
-                                        className="cursor-pointer text-primary hover:text-primary/80"
-                                    >
-                                        <div className="flex flex-col items-center gap-2">
-                                            <span>Kéo thả file vào đây hoặc click để chọn file</span>
-                                            <span className="text-sm text-gray-500">
-                                                (Hỗ trợ nhiều file, tối đa 5MB mỗi file)
-                                            </span>
-                                        </div>
-                                    </label>
-                                    {selectedFiles.length > 0 && (
-                                        <div className="mt-4 space-y-2">
-                                            {selectedFiles.map((file, index) => (
-                                                <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                                                    <span className="text-sm">{file.name}</span>
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => {
-                                                            setSelectedFiles(files => files.filter((_, i) => i !== index));
-                                                        }}
-                                                    >
-                                                        ✕
-                                                    </Button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
+                                <Dashboard uppy={uppy} />
                             </FormControl>
                             <FormDescription>
                                 Tải lên các tài liệu xe (tối đa 5MB mỗi file).
@@ -332,6 +251,7 @@ export default function NewDocumentForm() {
                         </FormItem>
                     )}
                 />
+                {/* <Dashboard uppy={uppy} plugins={['Webcam']} proudlyDisplayPoweredByUppy={false} /> */}
                 <FormField
                     control={form.control}
                     name="note"
