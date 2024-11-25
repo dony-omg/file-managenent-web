@@ -67,13 +67,13 @@ import { Label } from "@/components/ui/label"
 import { useRouter } from 'next/navigation'
 
 // Mock data for vehicles with Vietnamese content
-const data: Vehicle[] = [
-    { id: 1, registrationNumber: 'ABC123', type: 'Ô tô', brand: 'Toyota', owner: 'Nguyễn Văn A', status: 'active', expiryDate: '2024-05-15' },
-    { id: 2, registrationNumber: 'XYZ789', type: 'Xe máy', brand: 'Honda', owner: 'Trần Thị B', status: 'expiring', expiryDate: '2023-08-30' },
-    { id: 3, registrationNumber: 'DEF456', type: 'Xe tải', brand: 'Ford', owner: 'Lê Văn C', status: 'expired', expiryDate: '2023-03-01' },
-    { id: 4, registrationNumber: 'GHI789', type: 'Ô tô', brand: 'Chevrolet', owner: 'Phạm Thị D', status: 'active', expiryDate: '2024-11-20' },
-    { id: 5, registrationNumber: 'JKL012', type: 'SUV', brand: 'Nissan', owner: 'Hoàng Văn E', status: 'active', expiryDate: '2024-09-10' },
-]
+// const data: Vehicle[] = [
+//     { id: 1, registrationNumber: 'ABC123', type: 'Ô tô', brand: 'Toyota', owner: 'Nguyễn Văn A', status: 'active', expiryDate: '2024-05-15' },
+//     { id: 2, registrationNumber: 'XYZ789', type: 'Xe máy', brand: 'Honda', owner: 'Trần Thị B', status: 'expiring', expiryDate: '2023-08-30' },
+//     { id: 3, registrationNumber: 'DEF456', type: 'Xe tải', brand: 'Ford', owner: 'Lê Văn C', status: 'expired', expiryDate: '2023-03-01' },
+//     { id: 4, registrationNumber: 'GHI789', type: 'Ô tô', brand: 'Chevrolet', owner: 'Phạm Thị D', status: 'active', expiryDate: '2024-11-20' },
+//     { id: 5, registrationNumber: 'JKL012', type: 'SUV', brand: 'Nissan', owner: 'Hoàng Văn E', status: 'active', expiryDate: '2024-09-10' },
+// ]
 
 type Vehicle = {
     id: number
@@ -85,7 +85,8 @@ type Vehicle = {
     expiryDate: string
 }
 
-export default function VehicleList() {
+export default function DocumentList({ data }: { data: any }) {
+
     const router = useRouter()
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
