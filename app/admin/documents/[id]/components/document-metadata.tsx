@@ -31,14 +31,15 @@ const vehicleData = {
 
 
 interface DocumentMetadataProps {
-    metadata: {
-        createdAt: string;
-        updatedAt: string;
-        additionalInfo: string;
-    };
+    // metadata: {
+    //     createdAt: string;
+    //     updatedAt: string;
+    //     additionalInfo: string;
+    // };
+    document: any
 }
 
-export default function DocumentMetadata() {
+export default function DocumentMetadata({ document }: DocumentMetadataProps) {
     const [reminderEnabled, setReminderEnabled] = useState(false)
 
     const getStatusBadge = (status: string) => {

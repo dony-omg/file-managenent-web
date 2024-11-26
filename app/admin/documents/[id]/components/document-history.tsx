@@ -9,7 +9,17 @@ const activityHistory = [
     { id: 4, action: 'Đăng ký ban đầu', date: '2022-01-01', details: 'Đăng ký xe ban đầu' },
 ]
 
-export default function History() {
+interface HistoryProps {
+    // metadata: {
+    //     createdAt: string;
+    //     updatedAt: string;
+    //     additionalInfo: string;
+    // };
+    document: any
+}
+
+
+export default function History({ document }: HistoryProps) {
 
     return (
         <Card >

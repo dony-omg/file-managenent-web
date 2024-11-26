@@ -15,7 +15,16 @@ const initialDocuments = [
     { id: 4, name: 'Hóa đơn bán hàng', type: 'jpg', uploadDate: '2023-01-01' },
 ]
 
-export default function DocumentList() {
+interface DocumentListProps {
+    // metadata: {
+    //     createdAt: string;
+    //     updatedAt: string;
+    //     additionalInfo: string;
+    // };
+    document: any
+}
+
+export default function DocumentList({ document }: DocumentListProps) {
     const [documents, setDocuments] = useState(initialDocuments)
 
     return (

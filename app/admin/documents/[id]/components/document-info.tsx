@@ -22,34 +22,38 @@ const vehicleData = {
 
 
 
-interface DocumentInfoProps {
-    document: {
-        id: number;
-        registrationNumber: string;
-        type: string;
-        brand: string;
-        model: string;
-        color: string;
-        year: number;
-        owner: {
-            name: string;
-            contact: string;
-        };
-        registration: {
-            date: string;
-            expiry: string;
-            status: string;
-        };
-        metadata: {
-            createdAt: string;
-            updatedAt: string;
-            additionalInfo: string;
-        };
-        title: string; // Include title if needed
-    };
+// interface DocumentInfoProps {
+//     document: {
+//         id: number;
+//         registrationNumber: string;
+//         type: string;
+//         brand: string;
+//         model: string;
+//         color: string;
+//         year: number;
+//         owner: {
+//             name: string;
+//             contact: string;
+//         };
+//         registration: {
+//             date: string;
+//             expiry: string;
+//             status: string;
+//         };
+//         metadata: {
+//             createdAt: string;
+//             updatedAt: string;
+//             additionalInfo: string;
+//         };
+//         title: string; // Include title if needed
+//     };
+// }
+
+interface DocumentHeaderProps {
+    document: any; // Replace 'any' with the actual type of your document
 }
 
-export default function DocumentInfo() {
+export default function DocumentInfo({ document }: DocumentHeaderProps) {
     return (
         <Card>
             <CardHeader>
