@@ -15,11 +15,18 @@ interface HistoryProps {
     //     updatedAt: string;
     //     additionalInfo: string;
     // };
-    document: any
+    activityHistory: Activity[]
+}
+
+interface Activity {
+    id: string,
+    date: string,
+    action: string,
+    details: string
 }
 
 
-export default function History({ document }: HistoryProps) {
+export default function History({ activityHistory }: HistoryProps) {
 
     return (
         <Card >
@@ -36,7 +43,7 @@ export default function History({ document }: HistoryProps) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {activityHistory.map((activity) => (
+                        {activityHistory?.map((activity: Activity) => (
                             <TableRow key={activity.id}>
                                 <TableCell>{activity.date}</TableCell>
                                 <TableCell>{activity.action}</TableCell>

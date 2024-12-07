@@ -20,29 +20,12 @@ type Document = {
 
 export default async function Page() {
     const supabase = await createClient()
+
     const { data: documents, error } = await supabase
         .from('documents')
-        .select(`
-            document_id,
-            document_type,
-            file_path,
-            uploaded_at,
-            note,
-            vehicle_id,
-            vehicles (
-                registration_number,
-                vehicle_type,
-                brand,
-                color,
-                year_of_manufacture
-            )
-        `)
-        .order('uploaded_at', { ascending: false })
+        .select(`*`)
 
-
-
-
-    console.log('Documents:', documents)
+    console.log(documents)
 
     if (error) {
         console.error(error)
@@ -51,13 +34,13 @@ export default async function Page() {
 
 
     const documentList = documents.map((doc: any) => ({
-        id: doc.document_id || 'N/A',
-        registrationNumber: doc.document_type || 'N/A',
-        type: doc.vehicles?.vehicle_type || 'N/A',
+        id: doc.documentId || 'N/A',
+        registrationNumber: doc.documentNumber || 'N/A',
+        type: doc.documentType || 'N/A',
         brand: doc.vehicles?.brand || 'N/A',
         owner: 'Unknown',
         status: doc.uploaded_at ? 'active' : 'inactive',
-        expiryDate: doc.uploaded_at
+        expiryDate: doc.expiryDate
     }))
 
 

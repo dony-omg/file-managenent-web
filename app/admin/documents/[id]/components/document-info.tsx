@@ -22,32 +22,6 @@ const vehicleData = {
 
 
 
-// interface DocumentInfoProps {
-//     document: {
-//         id: number;
-//         registrationNumber: string;
-//         type: string;
-//         brand: string;
-//         model: string;
-//         color: string;
-//         year: number;
-//         owner: {
-//             name: string;
-//             contact: string;
-//         };
-//         registration: {
-//             date: string;
-//             expiry: string;
-//             status: string;
-//         };
-//         metadata: {
-//             createdAt: string;
-//             updatedAt: string;
-//             additionalInfo: string;
-//         };
-//         title: string; // Include title if needed
-//     };
-// }
 
 interface DocumentHeaderProps {
     document: any; // Replace 'any' with the actual type of your document
@@ -63,31 +37,31 @@ export default function DocumentInfo({ document }: DocumentHeaderProps) {
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <Label>Số đăng ký</Label>
-                        <div>{vehicleData.registrationNumber}</div>
+                        <div>{document?.registrationNumber}</div>
                     </div>
                     <div>
                         <Label>Loại xe</Label>
-                        <div>{vehicleData.type}</div>
+                        <div>{document?.type}</div>
                     </div>
                     <div>
                         <Label>Hãng</Label>
-                        <div>{vehicleData.brand}</div>
+                        <div>{document?.brand}</div>
                     </div>
                     <div>
                         <Label>Model</Label>
-                        <div>{vehicleData.model}</div>
+                        <div>{document?.model}</div>
                     </div>
                     <div>
                         <Label>Màu sắc</Label>
-                        <div>{vehicleData.color}</div>
+                        <div>{document?.color}</div>
                     </div>
                     <div>
                         <Label>Năm sản xuất</Label>
-                        <div>{vehicleData.year}</div>
+                        <div>{document?.year}</div>
                     </div>
                     <div className="col-span-2">
                         <Label>Chủ sở hữu</Label>
-                        <div>{vehicleData.owner.name} - {vehicleData.owner.contact}</div>
+                        <div>{document?.owner?.name} - {document?.owner?.contact}</div>
                     </div>
                 </div>
             </CardContent>
