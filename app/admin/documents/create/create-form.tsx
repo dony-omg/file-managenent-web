@@ -46,6 +46,8 @@ import Webcam from '@uppy/webcam'
 import '@uppy/core/dist/style.css'
 import '@uppy/dashboard/dist/style.css'
 
+const supabase = createClient()
+
 const formSchema = z.object({
     documentId: z.string().min(1, { message: 'Document ID is required' }),
     vehicleId: z.string().min(1, { message: 'Vehicle ID is required' }),
@@ -95,11 +97,6 @@ export default function NewDocumentForm() {
                 allowedFileTypes: ['image/*', '.pdf', '.doc', '.docx']
             }
         })
-            .use(XHRUpload, {
-                endpoint: '/api/documents/upload',
-                formData: true,
-                fieldName: 'file'
-            })
             .use(Webcam, {
                 modes: ['picture'],
                 mirror: true,
@@ -112,22 +109,15 @@ export default function NewDocumentForm() {
         try {
             setIsSubmitting(true);
 
-            // Upload files first to get the URLs
-            const result = await uppy.upload();
 
-            let filePaths: string[] = [];
-            if (result?.successful && result.successful.length > 0) {
-                filePaths = result.successful
-                    .map(file => file.response?.body?.fileUrl || '')
-                    .filter((url): url is string => typeof url === 'string');
-            }
 
             // Create document record with actual file paths
             const documentData = {
-                document_id: values.documentId,
-                document_type: "vehicle",
-                file_path: filePaths.join(','), // Store multiple file paths as comma-separated string
+                vehicleId: 1,
+                documentType: 'Registration',
+                documentNumber: values.documentId,
                 note: values.note,
+                issueDate: new Date(),
             };
 
             const response = await fetch('/api/documents', {
@@ -147,6 +137,70 @@ export default function NewDocumentForm() {
                 });
                 throw new Error(`Failed to create document: ${errorData.message}`);
             }
+
+            const document = await response.json();
+
+            // [
+            //     {
+            //         "documentid": 6,
+            //         "vehicleId": 1,
+            //         "documentType": "Registration",
+            //         "documentNumber": "23127",
+            //         "issueDate": "2024-12-07",
+            //         "expiryDate": null,
+            //         "createDate": "2024-12-07T10:12:20.817922",
+            //         "note": ""
+            //     }
+            // ]
+
+            const documentId = document?.data[0]?.documentid || undefined;
+
+
+
+            console.log('documentId', documentId);
+
+            // 2. Cấu hình tải tệp lên Supabase Storage
+            uppy.use(XHRUpload, {
+                endpoint: '/api/documents/upload',
+                fieldName: 'file',
+                method: 'POST',
+                formData: true,
+                // headers: {
+                //     'Authorization': `Bearer ${yourAuthToken}`,
+                // },
+            });
+
+            const upLoadedResult = await uppy.upload();
+
+            if (upLoadedResult && upLoadedResult.failed && upLoadedResult.failed.length > 0) {
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "Failed to upload file. Please try again."
+                });
+                throw new Error('Failed to upload file');
+            }
+
+            if (upLoadedResult && Array.isArray(upLoadedResult.successful)) {
+                for (const file of upLoadedResult.successful) {
+                    if (file.response && file.response.body) {
+
+                        const fileUrl = `${supabase.storage.from('documents').getPublicUrl(file.response.body.Key).data.publicUrl}`;
+
+                        const { error: fileError } = await supabase.from('documentfiles').insert([
+                            {
+                                documentid: documentId,
+                                fileurl: fileUrl,
+                                filename: file.response.body.Key,
+                                uploadedat: new Date(),
+                            },
+                        ]);
+
+                        if (fileError) throw fileError;
+                    }
+                }
+            }
+
 
             toast({
                 title: "Success",
@@ -177,7 +231,7 @@ export default function NewDocumentForm() {
                                 <FormItem>
                                     <FormLabel>Số quản lý sổ</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Nhập mã số xe" {...field} />
+                                        <Input placeholder="Nhập m số xe" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

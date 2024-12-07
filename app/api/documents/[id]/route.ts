@@ -2,11 +2,11 @@ import { createClient } from '@/utils/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+    request: Request,
+    { params }: { params: { id: string } }
 ) {
     const id = (await params).id
-  const supabase = await createClient()
+    const supabase = await createClient()
 
     const { data, error } = await supabase
         .from('documents') // Replace with your actual table name
@@ -15,9 +15,9 @@ export async function GET(
         .single(); // Use .single() to get a single record
 
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
+    if (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 })
+    }
 
-  return NextResponse.json(data, { status: 200 })
+    return NextResponse.json(data, { status: 200 })
 }
