@@ -40,7 +40,7 @@ export default async function Page() {
         brand: doc.vehicles?.brand || 'N/A',
         owner: 'Unknown',
         status: doc.uploaded_at ? 'active' : 'inactive',
-        expiryDate: doc.expiryDate
+        expiryDate: doc.issueDate
     }))
 
 
