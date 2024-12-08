@@ -8,52 +8,20 @@ import { Card } from "@/components/ui/card";
 
 
 
-// Dữ liệu giả lập cho xe
-const vehicleData = {
-    id: 1,
-    registrationNumber: "ABC 123",
-    type: "Xe hơi",
-    brand: "Toyota",
-    model: "Camry",
-    color: "Bạc",
-    year: 2022,
-    owner: {
-        name: "John Doe",
-        contact: "+1 234 567 8900"
-    },
-    registration: {
-        date: "2023-01-01",
-        expiry: "2024-01-01",
-        status: "active"
-    }
-}
 
 
 interface DocumentHeaderProps {
-    document: any; // Replace 'any' with the actual type of your document
+    documentNumber: String
 }
 
-export default function DocumentHeader({ document }: DocumentHeaderProps) {
-
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'active':
-                return <Badge className="bg-green-500"><CheckCircle className="w-4 h-4 mr-1" /> Hoạt động</Badge>
-            case 'expiring':
-                return <Badge className="bg-yellow-500"><AlertTriangle className="w-4 h-4 mr-1" /> Sắp hết hạn</Badge>
-            case 'expired':
-                return <Badge className="bg-red-500"><AlertTriangle className="w-4 h-4 mr-1" /> Hết hạn</Badge>
-            default:
-                return null
-        }
-    }
+export default function DocumentHeader({ documentNumber }: DocumentHeaderProps) {
 
     return (
         <Card className='p-6 mb-6'>
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-3xl font-bold">{vehicleData.registrationNumber}</h1>
+                <h1 className="text-3xl font-bold">{documentNumber}</h1>
                 <div className="flex space-x-2">
-                    <Button variant="outline"><Pencil className="w-4 h-4 mr-2" /> Chỉnh sửa thông tin</Button>
+                    <Button variant="outline" disabled><Pencil className="w-4 h-4 mr-2" /> Chỉnh sửa thông tin</Button>
                     {/* <Button variant="outline" className="text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Xóa xe</Button> */}
                     <Button>Gia hạn đăng ký</Button>
                 </div>

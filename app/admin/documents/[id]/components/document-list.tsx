@@ -7,25 +7,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Eye } from "lucide-react";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
-// Dữ liệu giả lập cho tài liệu
-const initialDocuments = [
-    { id: 1, name: 'Giấy đăng ký xe', type: 'pdf', uploadDate: '2023-01-01' },
-    { id: 2, name: 'Bảo hiểm xe', type: 'pdf', uploadDate: '2023-01-01' },
-    { id: 3, name: 'Giấy chứng nhận kiểm định', type: 'pdf', uploadDate: '2023-01-01' },
-    { id: 4, name: 'Hóa đơn bán hàng', type: 'jpg', uploadDate: '2023-01-01' },
-]
 
 interface DocumentListProps {
-    // metadata: {
-    //     createdAt: string;
-    //     updatedAt: string;
-    //     additionalInfo: string;
-    // };
-    document: any
+    documentFiles: Array<{ id: number; filename: string; type: string; uploadedat: string }>
 }
 
-export default function DocumentList({ document }: DocumentListProps) {
-    const [documents, setDocuments] = useState(initialDocuments)
+export default function DocumentList({ documentFiles }: DocumentListProps) {
 
     return (
         <Card className="md:col-span-3">
@@ -37,31 +24,31 @@ export default function DocumentList({ document }: DocumentListProps) {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Tên tài liệu</TableHead>
-                            <TableHead>Loại</TableHead>
+                            {/* <TableHead>Loại</TableHead> */}
                             <TableHead>Ngày tải lên</TableHead>
                             <TableHead>Hành động</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {documents.map((doc) => (
+                        {documentFiles?.map((doc) => (
                             <TableRow key={doc.id}>
-                                <TableCell>{doc.name}</TableCell>
-                                <TableCell>{doc.type.toUpperCase()}</TableCell>
-                                <TableCell>{doc.uploadDate}</TableCell>
+                                <TableCell>{doc?.filename ?? ''}</TableCell>
+                                {/* <TableCell>{doc?.type?.toUpperCase()}</TableCell> */}
+                                <TableCell>{doc.uploadedat}</TableCell>
                                 <TableCell>
                                     <div className="flex space-x-2">
                                         <Button variant="outline" size="sm"><Download className="w-4 h-4" /></Button>
                                         <Button variant="outline" size="sm"><Eye className="w-4 h-4" /></Button>
-                                        <Button variant="outline" size="sm" className="text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4" /></Button>
+                                        {/* <Button variant="outline" size="sm" className="text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4" /></Button> */}
                                     </div>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-                <Button className="mt-4">
+                {/* <Button className="mt-4">
                     <PlusCircle className="w-4 h-4 mr-2" /> Thêm tài liệu
-                </Button>
+                </Button> */}
             </CardContent>
         </Card>
     )

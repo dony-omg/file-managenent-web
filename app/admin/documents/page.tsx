@@ -34,7 +34,7 @@ export default async function Page() {
 
 
     const documentList = documents.map((doc: any) => ({
-        id: doc.documentId || 'N/A',
+        id: doc.documentid || 'N/A',
         registrationNumber: doc.documentNumber || 'N/A',
         type: doc.documentType || 'N/A',
         brand: doc.vehicles?.brand || 'N/A',

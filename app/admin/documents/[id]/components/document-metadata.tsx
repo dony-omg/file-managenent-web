@@ -31,15 +31,15 @@ const vehicleData = {
 
 
 interface DocumentMetadataProps {
-    // metadata: {
-    //     createdAt: string;
-    //     updatedAt: string;
-    //     additionalInfo: string;
-    // };
-    document: any
+    metadata: {
+        createdAt: string;
+        updatedAt: string;
+        expiryDate: string;
+    };
+    // document: any
 }
 
-export default function DocumentMetadata({ document }: DocumentMetadataProps) {
+export default function DocumentMetadata({ metadata }: DocumentMetadataProps) {
     const [reminderEnabled, setReminderEnabled] = useState(false)
 
     const getStatusBadge = (status: string) => {
@@ -56,7 +56,7 @@ export default function DocumentMetadata({ document }: DocumentMetadataProps) {
     }
 
     return (
-        <Card>
+        <Card className="md:col-span-3">
             <CardHeader>
                 <CardTitle>Thông tin đăng ký</CardTitle>
             </CardHeader>
@@ -64,24 +64,25 @@ export default function DocumentMetadata({ document }: DocumentMetadataProps) {
                 <div className="space-y-2">
                     <div>
                         <Label>Ngày đăng ký</Label>
-                        <div>{vehicleData.registration.date}</div>
+                        <div>{metadata?.createdAt}</div>
                     </div>
                     <div>
                         <Label>Ngày hết hạn</Label>
-                        <div>{vehicleData.registration.expiry}</div>
+                        <div>{metadata?.expiryDate}</div>
                     </div>
                     <div>
-                        <Label>Trạng </Label>
-                        <div>{getStatusBadge(vehicleData.registration.status)}</div>
+                        <Label>Cập nhật lần cuối</Label>
+                        <div>{metadata?.expiryDate}</div>
                     </div>
-                    <div className="flex items-center space-x-2">
+
+                    {/* <div className="flex items-center space-x-2">
                         <Switch
                             id="reminder"
                             checked={reminderEnabled}
                             onCheckedChange={setReminderEnabled}
                         />
                         <Label htmlFor="reminder">Nhắc nhở gia hạn</Label>
-                    </div>
+                    </div> */}
                 </div>
             </CardContent>
         </Card>
