@@ -5,6 +5,9 @@ import DocumentMetadata from './components/document-metadata'
 import DocumentList from './components/document-list'
 import History from './components/document-history'
 
+// Define a type for the params
+type Params = { id: string };
+
 async function getDocument(id: string) {
     const supabase = await createClient(); // Ensure you have your Supabase client initialized
 
@@ -36,19 +39,38 @@ async function getDocumentFilesByDocumentId(documentId: string) {
 
 }
 
+async function getDocumentLogs(documentId: string) {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+        .from('documentlogs')
+        .select('*')
+        .eq('documentid', documentId)
+    // .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching document logs:', error);
+        return [];
+    }
+
+    return data;
+}
+
+
 
 export default async function DocumentsDetail({
     params
 }: {
-    params: { id: string }
+    params: Params
 }) {
 
     const id = (await params).id
 
     const document = await getDocument(id)
     const documentFiles = await getDocumentFilesByDocumentId(id)
+    const documentLogs = await getDocumentLogs(id); // Add this line
 
-    console.log('documentFiles', documentFiles)
+
 
     const documentNumber = document?.documentNumber
     const metadata = {
@@ -67,9 +89,9 @@ export default async function DocumentsDetail({
                 </div> */}
                 <DocumentMetadata metadata={metadata} />
                 <DocumentList documentFiles={documentFiles} />
-                {/* <div className="md:col-span-3">
-                    <History document={document} />
-                </div> */}
+                <div className="md:col-span-3">
+                    <History activityHistory={documentLogs} />
+                </div>
             </div>
         </div>
     )

@@ -11,7 +11,7 @@ import { Card } from "@/components/ui/card";
 
 
 interface DocumentHeaderProps {
-    documentNumber: String
+    documentNumber: string
 }
 
 export default function DocumentHeader({ documentNumber }: DocumentHeaderProps) {
