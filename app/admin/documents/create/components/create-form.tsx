@@ -85,10 +85,10 @@ export default function NewDocumentForm() {
                 allowedFileTypes: ['image/*', '.pdf', '.doc', '.docx']
             }
         })
-        // .use(Webcam, {
-        //     modes: ['picture'],
-        //     mirror: true,
-        // })
+            .use(Webcam, {
+                modes: ['picture'],
+                mirror: true,
+            })
     }, [])
 
 

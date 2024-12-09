@@ -5,8 +5,7 @@ import DocumentMetadata from './components/document-metadata'
 import DocumentList from './components/document-list'
 import History from './components/document-history'
 
-// Define a type for the params
-type Params = { id: string };
+
 
 async function getDocument(id: string) {
     const supabase = await createClient(); // Ensure you have your Supabase client initialized
