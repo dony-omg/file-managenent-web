@@ -59,10 +59,10 @@ export default function DocumentInfo({ document }: DocumentHeaderProps) {
                         <Label>Năm sản xuất</Label>
                         <div>{document?.year}</div>
                     </div>
-                    <div className="col-span-2">
+                    {/* <div className="col-span-2">
                         <Label>Chủ sở hữu</Label>
                         <div>{document?.owner?.name} - {document?.owner?.contact}</div>
-                    </div>
+                    </div> */}
                 </div>
             </CardContent>
         </Card>

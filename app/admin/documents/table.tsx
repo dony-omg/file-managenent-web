@@ -109,10 +109,10 @@ export default function DocumentList({ data }: { data: any }) {
             accessorKey: "brand",
             header: "Thương Hiệu",
         },
-        {
-            accessorKey: "owner",
-            header: "Chủ Sở Hữu",
-        },
+        // {
+        //     accessorKey: "owner",
+        //     header: "Chủ Sở Hữu",
+        // },
         {
             accessorKey: "status",
             header: "Trạng Thái",
@@ -385,10 +385,10 @@ export default function DocumentList({ data }: { data: any }) {
                                         <Label>Thương Hiệu</Label>
                                         <div>{selectedVehicle.brand}</div>
                                     </div>
-                                    <div>
+                                    {/* <div>
                                         <Label>Chủ Sở Hữu</Label>
                                         <div>{selectedVehicle.owner}</div>
-                                    </div>
+                                    </div> */}
                                     <div>
                                         <Label>Trạng Thái</Label>
                                         <div>{selectedVehicle.status}</div>
