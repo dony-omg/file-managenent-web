@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
+// import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { CalendarIcon, Search } from 'lucide-react'
 import { format } from 'date-fns'
@@ -75,12 +75,12 @@ export default function ActivityLogging() {
             <div className='p-6 pt-0'>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                     <div className="flex-1">
-                        <Input
+                        {/* <Input
                             placeholder="Tìm kiếm nhật ký..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full"
-                        />
+                        /> */}
                     </div>
                     {/* <Select value={actionFilter || ''} onValueChange={setActionFilter}>
                     <SelectTrigger className="w-full md:w-[200px]">
@@ -101,12 +101,12 @@ export default function ActivityLogging() {
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
-                            <Calendar
+                            {/* <Calendar
                                 mode="single"
                                 selected={dateFilter || undefined}
                                 // onSelect={setDateFilter}
                                 initialFocus
-                            />
+                            /> */}
                         </PopoverContent>
                     </Popover>
                     {(actionFilter || dateFilter) && (

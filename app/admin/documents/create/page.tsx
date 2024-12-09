@@ -1,5 +1,9 @@
-import NewDocumentForm from "./create-form"
+'use client'
+import dynamic from "next/dynamic"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+const NewDocumentForm = dynamic(() => import('./components/create-form'), { ssr: false });
+
 
 export default function Page() {
     return (

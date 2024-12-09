@@ -5,10 +5,8 @@ import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
-import { CalendarIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
 import {
     Form,
     FormControl,
@@ -19,22 +17,9 @@ import {
     FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover'
+
 import { Textarea } from '@/components/ui/textarea'
 import { createClient } from '@/utils/supabase/client'
-import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/hooks/use-toast"
 import { Dashboard, DragDrop } from '@uppy/react'
 import Uppy from '@uppy/core'
@@ -46,31 +31,34 @@ import Webcam from '@uppy/webcam'
 import '@uppy/core/dist/style.css'
 import '@uppy/dashboard/dist/style.css'
 
-const supabase = createClient()
-
-const formSchema = z.object({
-    documentId: z.string().min(1, { message: 'Document ID is required' }),
-    vehicleId: z.string().min(1, { message: 'Vehicle ID is required' }),
-    // ownerName: z.string().optional(),
-    vehicleType: z.string().optional(),
-    documentImages: z
-        .array(z.instanceof(File))
-        .optional()
-        .refine(
-            (files) => {
-                if (files) {
-                    return files.every((file) => file.size <= 5000000);
-                }
-                return true;
-            },
-            {
-                message: "Each file size should not exceed 5MB.",
-            }
-        ),
-    note: z.string().optional(),
-})
-
 export default function NewDocumentForm() {
+
+
+    const supabase = createClient()
+
+    const formSchema = z.object({
+        documentId: z.string().min(1, { message: 'Document ID is required' }),
+        vehicleId: z.string().min(1, { message: 'Vehicle ID is required' }),
+        // ownerName: z.string().optional(),
+        vehicleType: z.string().optional(),
+        documentImages: z
+            .array(z.instanceof(File))
+            .optional()
+            .refine(
+                (files) => {
+                    if (files) {
+                        return files.every((file) => file.size <= 5000000);
+                    }
+                    return true;
+                },
+                {
+                    message: "Each file size should not exceed 5MB.",
+                }
+            ),
+        note: z.string().optional(),
+    })
+
+
     const router = useRouter()
     const { toast } = useToast()
 
@@ -97,10 +85,10 @@ export default function NewDocumentForm() {
                 allowedFileTypes: ['image/*', '.pdf', '.doc', '.docx']
             }
         })
-            .use(Webcam, {
-                modes: ['picture'],
-                mirror: true,
-            })
+        // .use(Webcam, {
+        //     modes: ['picture'],
+        //     mirror: true,
+        // })
     }, [])
 
 
