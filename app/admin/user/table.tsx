@@ -101,7 +101,7 @@ export default function UserTable({ users }: { users: User[] }) {
                     email: values.email,
                     role: values.role,
                 })
-                .eq('user_id', currentUser?.user_id)
+                .eq('userid', currentUser?.userid)
 
             if (error) {
                 toast({
@@ -135,7 +135,7 @@ export default function UserTable({ users }: { users: User[] }) {
         setIsLoading(true)
 
         try {
-            const { error } = await supabase.from('users').delete().eq('user_id', id)
+            const { error } = await supabase.from('users').delete().eq('userid', id)
 
             if (error) {
                 toast({
