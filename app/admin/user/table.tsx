@@ -13,19 +13,35 @@ import { EditUserDialog, userFormSchema } from "./edit-user-dialog"
 import { z } from "zod"
 
 interface User {
-    user_id: string
-    username: string
+    userid: number
+    fullname: string
     email: string
-    role: 'admin' | 'user'
+    phone: string
+    address: string
+    usertype: string
+    created_at: string
 }
 
 // // Mock data
 // const mockUsers: User[] = [
-//     { id: '1', name: 'John Doe', email: 'john@example.com', role: 'admin' },
-//     { id: '2', name: 'Jane Smith', email: 'jane@example.com', role: 'user' },
-//     { id: '3', name: 'Bob Johnson', email: 'bob@example.com', role: 'user' },
-//     { id: '4', name: 'Alice Brown', email: 'alice@example.com', role: 'admin' },
-//     { id: '5', name: 'Charlie Davis', email: 'charlie@example.com', role: 'user' },
+//     {
+//         "userid": 1,
+//         "fullname": "Nguyen Van A",
+//         "email": "nguyenvana@example.com",
+//         "phone": "0987654321",
+//         "address": "Hanoi",
+//         "usertype": "Owner",
+//         "created_at": "2024-12-06T17:29:51.298068"
+//     },
+//     {
+//         "userid": 2,
+//         "fullname": "Le Thi B",
+//         "email": "lethib@example.com",
+//         "phone": "0912345678",
+//         "address": "Ho Chi Minh City",
+//         "usertype": "Admin",
+//         "created_at": "2024-12-06T17:29:51.298068"
+//     }
 // ]
 
 export default function UserTable({ users }: { users: User[] }) {
@@ -169,9 +185,12 @@ export default function UserTable({ users }: { users: User[] }) {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Name</TableHead>
+                        <TableHead>Full Name</TableHead>
                         <TableHead>Email</TableHead>
-                        <TableHead>Role</TableHead>
+                        <TableHead>Phone</TableHead>
+                        <TableHead>Address</TableHead>
+                        <TableHead>User Type</TableHead>
+                        <TableHead>Created At</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -179,7 +198,7 @@ export default function UserTable({ users }: { users: User[] }) {
                     {isLoading ? (
                         // Loading rows
                         Array.from({ length: 5 }).map((_, index) => (
-                            <TableRow key={index}>
+                            <TableRow key={`loading-row-${index}`}>
                                 <TableCell>
                                     <div className="h-4 w-32 animate-pulse rounded bg-gray-200" />
                                 </TableCell>
@@ -199,11 +218,14 @@ export default function UserTable({ users }: { users: User[] }) {
                         ))
                     ) : (
                         // Actual data rows
-                        users.map((user) => (
-                            <TableRow key={user.user_id}>
-                                <TableCell>{user.username}</TableCell>
+                        users.map((user, index) => (
+                            <TableRow key={`${user.userid}-${index}`}>
+                                <TableCell>{user.fullname}</TableCell>
                                 <TableCell>{user.email}</TableCell>
-                                <TableCell>{user.role}</TableCell>
+                                <TableCell>{user.phone}</TableCell>
+                                <TableCell>{user.address}</TableCell>
+                                <TableCell>{user.usertype}</TableCell>
+                                <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
                                 <TableCell className="text-right">
                                     <Button
                                         variant="ghost"
@@ -220,7 +242,7 @@ export default function UserTable({ users }: { users: User[] }) {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        onClick={() => handleDeleteUser(user.user_id)}
+                                        onClick={() => handleDeleteUser(user.userid)}
                                         disabled={isLoading}
                                     >
                                         {isLoading ? (
