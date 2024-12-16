@@ -1,12 +1,13 @@
 export interface Vehicle {
-    vehicle_id: number;
-    registration_number: string;
-    vehicle_type: string;
-    brand: string;
-    color?: string;
-    year_of_manufacture: number;
-    owner_id: number;
-    created_at?: string;
+  vehicleid: number; // Primary key
+  ownerid: number; // Foreign key referencing users table
+  licenseplate: string; // Unique license plate number
+  brand?: string; // Vehicle brand (optional)
+  model?: string; // Vehicle model (optional)
+  year?: number; // Year of manufacture (optional)
+  registrationdate: Date; // Date of registration
+  status?: 'Active' | 'Expired' | 'Pending'; // Status of the vehicle (optional)
+  createdat?: Date; // Timestamp of creation (optional)
 }
 
 export interface User {
