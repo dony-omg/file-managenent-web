@@ -242,7 +242,7 @@ export default function UserTable({ users }: { users: User[] }) {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        onClick={() => handleDeleteUser(user.userid)}
+                                        onClick={() => handleDeleteUser((user?.userid || '').toString())}
                                         disabled={isLoading}
                                     >
                                         {isLoading ? (
