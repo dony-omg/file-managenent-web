@@ -31,8 +31,8 @@ export default function History({ activityHistory }: HistoryProps) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {activityHistory?.map((activity: Activity) => (
-                            <TableRow key={activity.id}>
+                        {activityHistory?.map((activity: Activity, index: number) => (
+                            <TableRow key={`${activity.id}-${index}`}>
                                 <TableCell>{activity.performedat}</TableCell>
                                 <TableCell>{activity.action}</TableCell>
                                 <TableCell>{activity.performedby}</TableCell>
