@@ -97,15 +97,12 @@ export default function NewDocumentForm() {
         try {
             setIsSubmitting(true);
 
-
-
             // Create document record with actual file paths
             const documentData = {
-                vehicleId: 1,
-                documentType: 'Registration',
-                documentNumber: values.documentId,
+                vehicle_id: 1,
+                document_type: 'Registration',
+                document_number: values.documentId,
                 note: values.note,
-                issueDate: new Date(),
             };
 
             const response = await fetch('/api/documents', {
@@ -128,20 +125,8 @@ export default function NewDocumentForm() {
 
             const document = await response.json();
 
-            // [
-            //     {
-            //         "documentid": 6,
-            //         "vehicleId": 1,
-            //         "documentType": "Registration",
-            //         "documentNumber": "23127",
-            //         "issueDate": "2024-12-07",
-            //         "expiryDate": null,
-            //         "createDate": "2024-12-07T10:12:20.817922",
-            //         "note": ""
-            //     }
-            // ]
 
-            const documentId = document?.data[0]?.documentid || undefined;
+            const documentId = document?.data[0]?.document_id || undefined;
 
 
 
@@ -179,7 +164,7 @@ export default function NewDocumentForm() {
                             {
                                 documentid: documentId,
                                 fileurl: fileUrl,
-                                filename: file.response.body.Key,
+                                filename: file.response.body.Key || 'name_file',
                                 uploadedat: new Date(),
                             },
                         ]);

@@ -6,14 +6,13 @@ import DocumentList from './components/document-list'
 import History from './components/document-history'
 
 
-
 async function getDocument(id: string) {
     const supabase = await createClient(); // Ensure you have your Supabase client initialized
 
     const { data, error } = await supabase
         .from('documents') // Replace with your actual table name
         .select('*') // Select all fields or specify the fields you need
-        .eq('documentid', id) // Filter by document_id
+        .eq('document_id', id) // Filter by document_id
         .single(); // Use .single() to get a single record
 
     if (error) {
@@ -64,9 +63,10 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
     const documentFiles = await getDocumentFilesByDocumentId(params.id)
     const documentLogs = await getDocumentLogs(params.id); // Add this line
 
+    console.log(document)
+    console.log(documentFiles)
 
-
-    const documentNumber = document?.documentNumber
+    const documentNumber = document?.document_number
     const metadata = {
         createdAt: document?.createDate || '',
         updatedAt: '',

@@ -1,29 +1,12 @@
 import { createClient } from '@/utils/supabase/server'
 import DocumentList from './table'
 
-// Define the type for the document
-type Vehicle = {
-    registration_number: string | null;
-    vehicle_type: string | null;
-    brand: string | null;
-    color?: string | null; // Optional properties
-    year_of_manufacture?: number | null; // Optional properties
-};
-
-type Document = {
-    document_id: string;
-    document_type: string;
-    vehicle_id: string | null;
-    vehicles: Vehicle | null;
-    uploaded_at: string | null;
-}[]
-
 export default async function Page() {
     const supabase = await createClient()
 
     const { data: documents, error } = await supabase
         .from('documents')
-        .select(`*`)
+        .select(`*,vehicles (*)`).order('created_at', { ascending: false })
 
     console.log(documents)
 
@@ -34,12 +17,13 @@ export default async function Page() {
 
 
     const documentList = documents.map((doc: any) => ({
-        id: doc.documentid || 'N/A',
-        registrationNumber: doc.documentNumber || 'N/A',
-        type: doc.documentType || 'N/A',
+        id: doc.document_id || 'N/A',
+        registrationNumber: doc.document_number || 'N/A',
+        type: doc.document_type || 'N/A',
         brand: doc.vehicles?.brand || 'N/A',
-        owner: 'Unknown',
-        status: doc.uploaded_at ? 'active' : 'inactive',
+        model: doc.vehicles?.model || 'N/A',
+        licenseplate: doc.vehicles?.licenseplate || 'N/A',
+        status: doc.vehicles?.status,
         expiryDate: doc.issueDate
     }))
 
