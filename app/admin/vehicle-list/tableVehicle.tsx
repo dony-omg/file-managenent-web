@@ -13,29 +13,14 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
-import {
-  ChevronDown,
-  MoreHorizontal,
-  Plus,
-  Search,
-  SlidersHorizontal,
-  Eye,
-  Pencil,
-  Trash2,
-  CheckCircle,
-  AlertTriangle,
-  X
-} from 'lucide-react';
+import { ChevronDown, Plus, Search, SlidersHorizontal } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import {
@@ -69,125 +54,49 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-
 import { useRouter } from 'next/navigation';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog';
 
-// Mock data for vehicles with Vietnamese content
-// const data: Vehicle[] = [
-//     { id: 1, registrationNumber: 'ABC123', type: 'Ô tô', brand: 'Toyota', owner: 'Nguyễn Văn A', status: 'active', expiryDate: '2024-05-15' },
-//     { id: 2, registrationNumber: 'XYZ789', type: 'Xe máy', brand: 'Honda', owner: 'Trần Thị B', status: 'expiring', expiryDate: '2023-08-30' },
-//     { id: 3, registrationNumber: 'DEF456', type: 'Xe tải', brand: 'Ford', owner: 'Lê Văn C', status: 'expired', expiryDate: '2023-03-01' },
-//     { id: 4, registrationNumber: 'GHI789', type: 'Ô tô', brand: 'Chevrolet', owner: 'Phạm Thị D', status: 'active', expiryDate: '2024-11-20' },
-//     { id: 5, registrationNumber: 'JKL012', type: 'SUV', brand: 'Nissan', owner: 'Hoàng Văn E', status: 'active', expiryDate: '2024-09-10' },
-// ]
-
-type Vehicle = {
+type VehicleList = {
   id: number;
-  registrationNumber: string;
-  type: string;
+  licensePlate: string;
   brand: string;
-  owner: string;
+  model: string;
+  year: number;
+  registrationDate: string;
   status: 'active' | 'expiring' | 'expired';
-  expiryDate: string;
 };
 
-export default function DocumentList({ data }: { data: any }) {
+const TableVehicleList = ({ data }: { data: any }) => {
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
 
-  const columns: ColumnDef<Vehicle>[] = [
+  const columns: ColumnDef<VehicleList>[] = [
     {
-      accessorKey: 'registrationNumber',
-      header: 'Số Đăng Ký',
-      cell: ({ row }) => (
-        <div className="font-medium">{row.getValue('registrationNumber')}</div>
-      )
-    },
-    {
-      accessorKey: 'type',
-      header: 'Loại Xe'
+      accessorKey: 'licensePlate',
+      header: 'Biển số xe'
     },
     {
       accessorKey: 'brand',
-      header: 'Thương Hiệu'
+      header: 'Nhãn hiệu'
     },
-    // {
-    //     accessorKey: "owner",
-    //     header: "Chủ Sở Hữu",
-    // },
+    {
+      accessorKey: 'model',
+      header: 'Dòng xe'
+    },
     {
       accessorKey: 'status',
-      header: 'Trạng Thái',
-      cell: ({ row }) => {
-        const status = row.getValue('status') as string;
-        return (
-          <Badge
-            className={
-              status === 'active'
-                ? 'bg-green-500'
-                : status === 'expiring'
-                ? 'bg-yellow-500'
-                : 'bg-red-500'
-            }
-          >
-            {status === 'active' && <CheckCircle className="w-4 h-4 mr-1" />}
-            {status === 'expiring' && (
-              <AlertTriangle className="w-4 h-4 mr-1" />
-            )}
-            {status === 'expired' && <X className="w-4 h-4 mr-1" />}
-            {status === 'active'
-              ? 'Đang hoạt động'
-              : status === 'expiring'
-              ? 'Sắp hết hạn'
-              : 'Đã hết hạn'}
-          </Badge>
-        );
-      }
+      header: 'Trạng thái'
     },
     {
-      accessorKey: 'expiryDate',
-      header: 'Ngày Hết Hạn'
+      accessorKey: 'year',
+      header: 'Năm sản xuất'
     },
     {
-      id: 'actions',
-      cell: ({ row }) => {
-        const vehicle = row.original;
-        return (
-          <div className="flex space-x-2">
-            <Button
-              variant="ghost"
-              onClick={() => setSelectedVehicle(vehicle)}
-              className="h-8 w-8 p-0"
-            >
-              <Eye className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => console.log('Edit', vehicle.id)}
-              className="h-8 w-8 p-0"
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => console.log('Delete', vehicle.id)}
-              className="h-8 w-8 p-0"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        );
-      }
+      accessorKey: 'registrationDate',
+      header: 'Ngày đăng ký'
     }
   ];
 
@@ -215,7 +124,7 @@ export default function DocumentList({ data }: { data: any }) {
       <CardHeader>
         <CardTitle>
           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-            Quản Lý Tài Liệu
+            Danh sách phương tiện
           </h3>
         </CardTitle>
         <CardDescription>
@@ -224,29 +133,17 @@ export default function DocumentList({ data }: { data: any }) {
       </CardHeader>
       <CardContent>
         <div>
+          {/* search and filter bar */}
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center space-x-2 w-full">
-              <Input
-                placeholder="Tìm kiếm tài liệu..."
-                value={
-                  (table
-                    .getColumn('registrationNumber')
-                    ?.getFilterValue() as string) ?? ''
-                }
-                onChange={(event) =>
-                  table
-                    .getColumn('registrationNumber')
-                    ?.setFilterValue(event.target.value)
-                }
-                className="max-w-sm"
-              />
+              <Input placeholder="Tìm kiếm tài liệu..." className="max-w-sm" />
               <Button>
                 <Search className="mr-2 h-4 w-4" />
                 Tìm Kiếm
               </Button>
             </div>
             <div className="flex items-center space-x-2">
-              <Button onClick={() => router.push('/admin/documents/create')}>
+              <Button onClick={() => router.push('/admin/vehicle-list/create')}>
                 <Plus className="mr-2 h-4 w-4" />
                 Tạo hồ sơ mới
               </Button>
@@ -345,6 +242,8 @@ export default function DocumentList({ data }: { data: any }) {
               </DropdownMenu>
             </div>
           </div>
+          {/* close search and filter bar */}
+          {/* table */}
           <div className="rounded-md border">
             <Table>
               <TableHeader>
@@ -366,7 +265,7 @@ export default function DocumentList({ data }: { data: any }) {
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
+                {/* {table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
@@ -382,105 +281,24 @@ export default function DocumentList({ data }: { data: any }) {
                       ))}
                     </TableRow>
                   ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )}
+                ) : ( */}
+                <TableRow>
+                  <TableCell
+                    colSpan={columns?.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+                {/* )} */}
               </TableBody>
             </Table>
           </div>
-          <div className="flex items-center justify-between space-x-2 py-4">
-            <div className="flex-1 text-sm text-muted-foreground">
-              {table.getFilteredSelectedRowModel().rows.length} of{' '}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
-            </div>
-            <div className="space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-          {selectedVehicle && (
-            <Dialog
-              open={!!selectedVehicle}
-              onOpenChange={() => setSelectedVehicle(null)}
-            >
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Chi Tiết Xe</DialogTitle>
-                </DialogHeader>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Số Đăng Ký</Label>
-                    <div>{selectedVehicle.registrationNumber}</div>
-                  </div>
-                  <div>
-                    <Label>Loại Xe</Label>
-                    <div>{selectedVehicle.type}</div>
-                  </div>
-                  <div>
-                    <Label>Thương Hiệu</Label>
-                    <div>{selectedVehicle.brand}</div>
-                  </div>
-                  {/* <div>
-                                        <Label>Chủ Sở Hữu</Label>
-                                        <div>{selectedVehicle.owner}</div>
-                                    </div> */}
-                  <div>
-                    <Label>Trạng Thái</Label>
-                    <div>{selectedVehicle.status}</div>
-                  </div>
-                  <div>
-                    <Label>Ngày Hết Hạn</Label>
-                    <div>{selectedVehicle.expiryDate}</div>
-                  </div>
-                </div>
-                <div className="mt-4 flex justify-end space-x-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => console.log('Edit', selectedVehicle.id)}
-                  >
-                    Chỉnh Sửa
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="text-red-500 hover:text-red-700"
-                    onClick={() => console.log('Delete', selectedVehicle.id)}
-                  >
-                    Xóa
-                  </Button>
-                  <Button
-                    onClick={() =>
-                      router.push(`/admin/documents/${selectedVehicle.id}`)
-                    }
-                  >
-                    Xem Chi Tiết
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
+          {/* close table */}
         </div>
       </CardContent>
     </Card>
   );
-}
+};
+
+export default TableVehicleList;
