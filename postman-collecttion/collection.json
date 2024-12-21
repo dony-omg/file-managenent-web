@@ -1,0 +1,158 @@
+{
+  "info": {
+    "name": "File Management API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Create Document",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/documents",
+            "header": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/documents/upload",
+            "header": {
+              "Content-Type": "multipart/form-data"
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file"
+                },
+                {
+                  "key": "fileName",
+                  "type": "text"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Documents",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/documents/list",
+            "query": [
+              {"key": "page", "value": "1"},
+              {"key": "limit", "value": "10"},
+              {"key": "search", "value": ""},
+              {"key": "document_type", "value": ""},
+              {"key": "vehicle_id", "value": ""}
+            ]
+          }
+        },
+        {
+          "name": "Update Document",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/documents/:id",
+            "header": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": {
+                "file_path": "string"
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete Document",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/documents/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vehicles",
+      "item": [
+        {
+          "name": "Create Vehicle",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/vehicles",
+            "header": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "List Vehicles",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/vehicles/list",
+            "query": [
+              {"key": "page", "value": "1"},
+              {"key": "limit", "value": "10"},
+              {"key": "search", "value": ""},
+              {"key": "filter", "value": ""}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/user",
+            "header": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/user/list",
+            "query": [
+              {"key": "page", "value": "1"},
+              {"key": "limit", "value": "10"},
+              {"key": "search", "value": ""},
+              {"key": "filter", "value": ""}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Sign Out",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/signout"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}
