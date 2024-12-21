@@ -1,9 +1,9 @@
 import { createClient } from '@/utils/supabase/server'
-import DocumentHeader from './components/document-header'
-import DocumentInfo from './components/document-info'
-import DocumentMetadata from './components/document-metadata'
-import DocumentList from './components/document-list'
-import History from './components/document-history'
+import DocumentHeader from '../components/document-header'
+import DocumentInfo from '../components/document-info'
+import DocumentMetadata from '../components/document-metadata'
+import DocumentList from '../components/document-list'
+import History from '../components/document-history'
 
 
 async function getDocument(id: string) {
