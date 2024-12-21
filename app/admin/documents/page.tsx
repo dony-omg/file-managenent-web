@@ -24,7 +24,7 @@ export default async function Page() {
         model: doc.vehicles?.model || 'N/A',
         licenseplate: doc.vehicles?.licenseplate || 'N/A',
         status: doc.vehicles?.status,
-        expiryDate: doc.issueDate
+        created_at: doc.created_at
     }))
 
 

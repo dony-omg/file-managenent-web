@@ -155,8 +155,8 @@ export default function DocumentList({ data }: { data: any }) {
             }
         },
         {
-            accessorKey: 'expiryDate',
-            header: 'Ngày Hết Hạn'
+            accessorKey: 'created_at',
+            header: 'Ngày Tạo'
         },
         {
             id: 'actions',
