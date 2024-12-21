@@ -28,7 +28,7 @@ const data = {
                 },
                 {
                     title: 'Quản Lý Xe',
-                    url: '/admin/vehicle-list'
+                    url: '/admin/vehicle'
                 }
             ]
         },
