@@ -26,6 +26,7 @@ export default function DocumentList({ documentFiles }: DocumentListProps) {
     };
 
 
+
     return (
         <>
             <Card className="md:col-span-3">
@@ -70,7 +71,7 @@ export default function DocumentList({ documentFiles }: DocumentListProps) {
                                     </TableCell>
                                 </TableRow>
                             ))}
-                        </TableBody>s
+                        </TableBody>
                     </Table>
                 </CardContent>
             </Card>

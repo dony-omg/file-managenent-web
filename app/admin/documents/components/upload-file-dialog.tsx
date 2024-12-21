@@ -15,7 +15,7 @@ import { Dashboard } from '@uppy/react';
 import XHRUpload from '@uppy/xhr-upload';
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 interface UploadFileDialogProps {
     isOpen: boolean;
@@ -28,7 +28,6 @@ export function UploadFileDialog({
     onClose,
     onUpload,
 }: UploadFileDialogProps) {
-    const [uppy, setUppy] = useState<Uppy | null>(null);
     const { toast } = useToast();
 
     const handleClose = () => {
@@ -36,21 +35,19 @@ export function UploadFileDialog({
         onClose();
     };
 
-    useEffect(() => {
+    const uppy = useMemo(() => {
         const uppyInstance = new Uppy({
             restrictions: {
-                maxFileSize: 10 * 1024 * 1024, // 10MB
-                maxNumberOfFiles: 1,
+                maxFileSize: 5000000,
                 allowedFileTypes: ['image/*', '.pdf', '.doc', '.docx']
             },
-            autoProceed: false,
-        });
-
-        uppyInstance.use(XHRUpload, {
-            endpoint: '/api/upload', // Your upload endpoint
-            formData: true,
-            fieldName: 'file',
-        });
+            autoProceed: false
+        })
+            .use(XHRUpload, {
+                endpoint: '/api/documents/upload',
+                formData: true,
+                fieldName: 'file',
+            });
 
         uppyInstance.on('upload-success', (file, response) => {
             toast({
@@ -68,10 +65,12 @@ export function UploadFileDialog({
             });
         });
 
-        setUppy(uppyInstance);
-
-        // return () => uppyInstance.close({ reason: 'unmount' });
+        return uppyInstance;
     }, []);
+
+    const handleUpload = () => {
+        uppy.upload();
+    };
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -93,9 +92,16 @@ export function UploadFileDialog({
                 <DialogFooter>
                     <Button
                         type="button"
+                        variant="outline"
                         onClick={handleClose}
                     >
                         Cancel
+                    </Button>
+                    <Button
+                        type="button"
+                        onClick={handleUpload}
+                    >
+                        Upload Files
                     </Button>
                 </DialogFooter>
             </DialogContent>
