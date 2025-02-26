@@ -1,44 +1,49 @@
 import { LoginForm } from "@/components/login-form"
-import { login } from './actions'
+import Image from "next/image"
+import Link from "next/link"
 
-export default function Page() {
-    return (
+export default function LoginPage() {
+  return (
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Login Form Section */}
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-8">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <Link href="/" className="inline-block">
+              <Image src="/placeholder.svg" alt="Logo" width={48} height={48} className="mx-auto h-12 w-auto" />
+            </Link>
+            <h1 className="mt-6 text-3xl font-bold">Welcome back</h1>
+            <p className="mt-2 text-sm text-muted-foreground">Sign in to your account to continue</p>
+          </div>
 
-        <div className="grid min-h-screen grid-cols-1 md:grid-cols-2">
-            <div className="relative hidden flex-col justify-between bg-black p-10 text-white md:flex">
-                <div className="flex items-center gap-2">
-                    <div className="h-8 w-8">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-8 w-8"
-                        >
-                            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
-                            <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
-                            <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
-                            <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
-                        </svg>
-                    </div>
-                    <span className="text-xl font-bold">Acme Inc</span>
-                </div>
-                <blockquote className="space-y-2">
-                    <p className="text-lg">
-                        &ldquo;This library has saved me countless hours of work and helped me deliver stunning designs to my clients faster than ever before.&rdquo;
-                    </p>
-                    <footer className="text-sm">Sofia Davis</footer>
-                </blockquote>
-            </div>
-            <div className="flex items-center justify-center p-8">
-                <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-                    <LoginForm login={login} />
-                </div>
-            </div>
+          <LoginForm />
+
+          <div className="text-center text-sm">
+            <p className="text-muted-foreground">
+              Don&apos;t have an account?{" "}
+              <Link href="/register" className="font-medium text-primary hover:underline">
+                Sign up
+              </Link>
+            </p>
+          </div>
         </div>
+      </div>
 
-    )
+      {/* Image Section */}
+      <div className="hidden lg:block lg:flex-1">
+        <div className="relative h-full w-full bg-muted">
+          <Image src="/placeholder.svg?height=1080&width=1920" alt="Login" fill className="object-cover" priority />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20 p-8 flex flex-col justify-end">
+            <blockquote className="space-y-2">
+              <p className="text-lg">
+                "This document management system has transformed how our team collaborates and shares information."
+              </p>
+              <footer className="text-sm">Sofia Rodriguez, Product Manager</footer>
+            </blockquote>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
+

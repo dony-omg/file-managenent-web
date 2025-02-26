@@ -1,7 +1,7 @@
 import { AdminLayout } from "@/components/admin-layout"
 import { VehicleRecordList } from "@/components/vehicle-record-list"
 
-export default function HomePage() {
+export default function VehiclesPage() {
   return (
     <AdminLayout>
       <VehicleRecordList />
