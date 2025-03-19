@@ -18,7 +18,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname()
 
   const navigation = [
-    { name: "Dashboard", href: "/", icon: LayoutDashboard },
+    // { name: "Dashboard", href: "/", icon: LayoutDashboard },
     { name: "Vehicles", href: "/vehicles", icon: Car },
     { name: "Accounts", href: "/accounts", icon: Users },
     { name: "Active Users", href: "/active-users", icon: Activity },

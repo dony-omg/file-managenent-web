@@ -1,28 +1,37 @@
-export interface Vehicle {
-  vehicleid: number; // Primary key
-  ownerid: number; // Foreign key referencing users table
-  licenseplate: string; // Unique license plate number
-  brand?: string; // Vehicle brand (optional)
-  model?: string; // Vehicle model (optional)
-  year?: number; // Year of manufacture (optional)
-  registrationdate: Date; // Date of registration
-  status?: 'Active' | 'Expired' | 'Pending'; // Status of the vehicle (optional)
-  createdat?: Date; // Timestamp of creation (optional)
-}
-
+// Định nghĩa type cho bảng users
 export interface User {
-    user_id: number;
-    username: string;
-    email: string;
-    role: 'admin' | 'employee' | 'owner';
-    created_at?: string;
-    last_login?: string;
+  user_id: number;
+  fullname: string | null;
+  email: string | null;
+  phone: string | null;
+  addr: string | null;
+  usertype: string | null;
+  created_at: string; // timestamptz được trả về dưới dạng string (ISO 8601)
 }
 
-export interface Document {
-    document_id: number;
-    vehicle_id: number;
-    document_type: string;
-    file_path: string;
-    uploaded_at: string;
+// Định nghĩa type cho bảng tags
+export interface Tag {
+  tag_id: number;
+  user_id: number;
+  action: string | null;
+  timestamp: string; // timestamptz được trả về dưới dạng string (ISO 8601)
+}
+
+// Định nghĩa type cho bảng vehicles
+export interface Vehicle {
+  id: string; // UUID được trả về dưới dạng string
+  license_plate: string;
+  brand: string | null;
+  model: string | null;
+  year: number | null;
+  color: string | null;
+  vin_number: string | null;
+  engine_number: string | null;
+  chassis_number: string | null;
+  registration_date: string | null; // timestamptz được trả về dưới dạng string (ISO 8601)
+  expiration_date: string | null; // timestamptz được trả về dưới dạng string (ISO 8601)
+  status: string | null;
+  owner_id: number;
+  created_at: string; // timestamptz được trả về dưới dạng string (ISO 8601)
+  updated_at: string; // timestamptz được trả về dưới dạng string (ISO 8601)
 }
