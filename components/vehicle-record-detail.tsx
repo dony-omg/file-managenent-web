@@ -264,7 +264,7 @@ export function VehicleRecordDetail({ id }: VehicleRecordDetailProps) {
               <div className="md:w-1/3">
                 <div className="aspect-video rounded-md overflow-hidden bg-muted">
                   <img
-                    src={vehicleRecord.vehiclePhotos[0] || "/placeholder.svg"}
+                    src={(vehicleRecord.vehiclePhotos && vehicleRecord.vehiclePhotos[0]) || "/placeholder.svg"}
                     alt={`${vehicleRecord.make} ${vehicleRecord.model}`}
                     className="w-full h-full object-cover"
                   />
@@ -389,10 +389,10 @@ export function VehicleRecordDetail({ id }: VehicleRecordDetailProps) {
                       <Car className="h-5 w-5" />
                       Vehicle Photos
                     </h3>
-                    <Badge variant="secondary">{vehicleRecord.vehiclePhotos.length} photos</Badge>
+                    <Badge variant="secondary">{(vehicleRecord.vehiclePhotos || []).length} photos</Badge>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {vehicleRecord.vehiclePhotos.map((photo: SetStateAction<string | null>, index: number) => (
+                    {(vehicleRecord.vehiclePhotos || []).map((photo: SetStateAction<string | null>, index: number) => (
                       <div
                         key={`vehicle-${index}`}
                         className="aspect-video rounded-md overflow-hidden bg-muted cursor-pointer"
@@ -417,10 +417,10 @@ export function VehicleRecordDetail({ id }: VehicleRecordDetailProps) {
                       <FileText className="h-5 w-5" />
                       Vehicle Record Establishment Form
                     </h3>
-                    <Badge variant="secondary">{vehicleRecord.formPhotos.length} photos</Badge>
+                    <Badge variant="secondary">{(vehicleRecord.formPhotos || []).length} photos</Badge>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {vehicleRecord.formPhotos.map((photo: SetStateAction<string | null>, index: number) => (
+                    {(vehicleRecord.formPhotos || []).map((photo: SetStateAction<string | null>, index: number) => (
                       <div
                         key={`form-${index}`}
                         className="aspect-video rounded-md overflow-hidden bg-muted cursor-pointer"
@@ -445,10 +445,10 @@ export function VehicleRecordDetail({ id }: VehicleRecordDetailProps) {
                       <FileCheck className="h-5 w-5" />
                       Production/Assembly or Import Certificate
                     </h3>
-                    <Badge variant="secondary">{vehicleRecord.certificatePhotos.length} photos</Badge>
+                    <Badge variant="secondary">{(vehicleRecord.certificatePhotos || []).length} photos</Badge>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {vehicleRecord.certificatePhotos.map((photo: SetStateAction<string | null>, index: number) => (
+                    {(vehicleRecord.certificatePhotos || []).map((photo: SetStateAction<string | null>, index: number) => (
                       <div
                         key={`cert-${index}`}
                         className="aspect-video rounded-md overflow-hidden bg-muted cursor-pointer"
