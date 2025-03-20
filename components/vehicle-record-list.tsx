@@ -24,33 +24,33 @@ export function VehicleRecordList() {
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchVehicles = async () => {
-      try {
-        setLoading(true)
-        const params = new URLSearchParams({
-          page: page.toString(),
-          limit: limit.toString(),
-          ...(searchQuery && { search: searchQuery }),
-          ...(statusFilter !== "all" && { filter: statusFilter })
-        })
+  const fetchVehicles = async () => {
+    try {
+      setLoading(true)
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        ...(searchQuery && { search: searchQuery }),
+        ...(statusFilter !== "all" && { filter: statusFilter })
+      })
 
-        const response = await fetch(`/api/vehicles/list?${params}`)
-        const result = await response.json()
+      const response = await fetch(`/api/vehicles/list?${params}`)
+      const result = await response.json()
 
-        if (response.ok) {
-          setVehicles(result.data)
-          setTotal(result.metadata.total)
-        } else {
-          console.error("Failed to fetch vehicles:", result.error)
-        }
-      } catch (error) {
-        console.error("Error fetching vehicles:", error)
-      } finally {
-        setLoading(false)
+      if (response.ok) {
+        setVehicles(result.data)
+        setTotal(result.metadata.total)
+      } else {
+        console.error("Failed to fetch vehicles:", result.error)
       }
+    } catch (error) {
+      console.error("Error fetching vehicles:", error)
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchVehicles()
   }, [page, limit, searchQuery, statusFilter])
 
@@ -112,7 +112,11 @@ export function VehicleRecordList() {
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Vehicle Records</h1>
-          <CreateVehicleRecordDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} />
+          <CreateVehicleRecordDialog 
+            open={isCreateDialogOpen} 
+            onOpenChange={setIsCreateDialogOpen} 
+            onSuccess={fetchVehicles}
+          />
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4">

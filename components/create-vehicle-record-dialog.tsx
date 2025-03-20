@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import { createClient } from '@/utils/supabase/client'
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -22,9 +23,10 @@ import { Car, FileText, FileCheck, Upload, Plus, Loader2, Image, X } from "lucid
 interface CreateVehicleRecordDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSuccess?: () => void
 }
 
-export function CreateVehicleRecordDialog({ open, onOpenChange }: CreateVehicleRecordDialogProps) {
+export function CreateVehicleRecordDialog({ open, onOpenChange, onSuccess }: CreateVehicleRecordDialogProps) {
   const [activeTab, setActiveTab] = useState("details")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [vehiclePhotos, setVehiclePhotos] = useState<string[]>([])
@@ -57,20 +59,54 @@ export function CreateVehicleRecordDialog({ open, onOpenChange }: CreateVehicleR
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      if (!formData.year) {
+        throw new Error('Vehicle year is required')
+      }
 
-    // Here you would typically send the data to your API
-    console.log("Vehicle record created:", {
-      ...formData,
-      vehiclePhotos,
-      formPhotos,
-      certificatePhotos,
-    })
+      const year = parseInt(formData.year)
+      if (isNaN(year) || year < 1900 || year > new Date().getFullYear()) {
+        throw new Error('Please enter a valid vehicle year')
+      }
 
-    setIsSubmitting(false)
-    onOpenChange(false)
-    resetForm()
+      const vehicleData = {
+        license_plate: formData.registrationNumber,
+        brand: formData.make,
+        model: formData.model,
+        year: parseInt(formData.year),
+        color: formData.color || null,
+        vin_number: formData.vin,
+        engine_number: formData.engineNumber || null,
+        fuel_type: formData.fuelType || null,
+        owner_name: formData.ownerName || null,
+        owner_contact: formData.ownerContact || null,
+        status: "pending",
+      }
+
+      const response = await fetch('/api/vehicles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(vehicleData),
+      })
+
+      const result = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create vehicle record')
+      }
+
+      console.log('Vehicle record created:', result.data)
+
+      onOpenChange(false)
+      resetForm()
+      onSuccess?.()
+    } catch (error) {
+      console.error('Error creating vehicle record:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const resetForm = () => {
@@ -92,22 +128,35 @@ export function CreateVehicleRecordDialog({ open, onOpenChange }: CreateVehicleR
     setActiveTab("details")
   }
 
-  const simulatePhotoUpload = (photoType: "vehicle" | "form" | "certificate") => {
-    // Generate a random placeholder image
-    const width = 800
-    const height = 600
-    const placeholderUrl = `/placeholder.svg?height=${height}&width=${width}`
+  const handlePhotoUpload = async (photoType: "vehicle" | "form" | "certificate", e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return
 
-    switch (photoType) {
-      case "vehicle":
-        setVehiclePhotos((prev) => [...prev, placeholderUrl])
-        break
-      case "form":
-        setFormPhotos((prev) => [...prev, placeholderUrl])
-        break
-      case "certificate":
-        setCertificatePhotos((prev) => [...prev, placeholderUrl])
-        break
+    const file = e.target.files[0]
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) throw new Error('Upload failed')
+
+      const { url } = await response.json()
+      switch (photoType) {
+        case "vehicle":
+          setVehiclePhotos((prev) => [...prev, url])
+          break
+        case "form":
+          setFormPhotos((prev) => [...prev, url])
+          break
+        case "certificate":
+          setCertificatePhotos((prev) => [...prev, url])
+          break
+      }
+    } catch (error) {
+      console.error('Error uploading photo:', error)
     }
   }
 
@@ -156,14 +205,16 @@ export function CreateVehicleRecordDialog({ open, onOpenChange }: CreateVehicleR
             </div>
           ))}
 
-          <button
-            type="button"
-            onClick={() => simulatePhotoUpload(photoType)}
-            className="flex flex-col items-center justify-center gap-2 aspect-video rounded-md border border-dashed bg-muted/50 p-4 hover:bg-muted transition-colors"
-          >
+          <label className="flex flex-col items-center justify-center gap-2 aspect-video rounded-md border border-dashed bg-muted/50 p-4 hover:bg-muted transition-colors cursor-pointer">
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => handlePhotoUpload(photoType, e)}
+            />
             <Upload className="h-8 w-8 text-muted-foreground" />
             <span className="text-xs text-muted-foreground">Upload Photo</span>
-          </button>
+          </label>
         </div>
       </div>
     )
