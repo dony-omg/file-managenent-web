@@ -15,18 +15,18 @@ export async function GET(req: Request) {
 
     // Apply search if provided
     if (search) {
-        query = query.or(`licenseplate.ilike.%${search}%`)
+        query = query.or(`license_plate.ilike.%${search}%,vin_number.ilike.%${search}%,brand.ilike.%${search}%,model.ilike.%${search}%`)
     }
 
     // Apply filter if provided
-    if (filter) {
-        query = query.eq('type', filter)
+    if (filter && filter !== 'all') {
+        query = query.eq('status', filter)
     }
 
     // Apply pagination
     const { data, error, count } = await query
         .range(offset, offset + limit - 1)
-        .order('createdat', { ascending: false })
+        .order('created_at', { ascending: false })
 
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 })

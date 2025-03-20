@@ -18,20 +18,24 @@ export interface Tag {
 }
 
 // Định nghĩa type cho bảng vehicles
+// lib/types.ts
 export interface Vehicle {
-  id: string; // UUID được trả về dưới dạng string
+  id: string;
   license_plate: string;
-  brand: string | null;
-  model: string | null;
-  year: number | null;
+  brand: string;
+  model: string;
+  year: number;
   color: string | null;
-  vin_number: string | null;
+  vin_number: string;
   engine_number: string | null;
   chassis_number: string | null;
-  registration_date: string | null; // timestamptz được trả về dưới dạng string (ISO 8601)
-  expiration_date: string | null; // timestamptz được trả về dưới dạng string (ISO 8601)
+  registration_date: string | null;
+  expiration_date: string | null;
   status: string | null;
-  owner_id: number;
-  created_at: string; // timestamptz được trả về dưới dạng string (ISO 8601)
-  updated_at: string; // timestamptz được trả về dưới dạng string (ISO 8601)
+  owner_id: string;
+  created_at: string;
+  updated_at: string;
+  fuel_type: string | null; // Thêm cột mới
+  owner_name: string | null; // Thêm cột mới
+  owner_contact: string | null; // Thêm cột mới
 }

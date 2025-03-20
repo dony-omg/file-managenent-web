@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,107 +11,72 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Search, MoreHorizontal, FileText, Camera, FileCheck, Download, Eye, Pencil, Trash2 } from "lucide-react"
 import { CreateVehicleRecordDialog } from "./create-vehicle-record-dialog"
-
-interface VehicleRecord {
-  id: string
-  registrationNumber: string
-  vin: string
-  make: string
-  model: string
-  year: string
-  status: "pending" | "approved" | "rejected"
-  lastInspection: string
-  vehiclePhotos: number
-  formPhotos: number
-  certificatePhotos: number
-}
+import { Vehicle } from "@/type/types"
 
 export function VehicleRecordList() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [vehicles, setVehicles] = useState<Vehicle[]>([])
+  const [page, setPage] = useState(1)
+  const [limit] = useState(10)
+  const [total, setTotal] = useState(0)
+  const [loading, setLoading] = useState(true)
 
-  // Sample data
-  const vehicleRecords: VehicleRecord[] = [
-    {
-      id: "1",
-      registrationNumber: "ABC-123",
-      vin: "1HGCM82633A123456",
-      make: "Toyota",
-      model: "Camry",
-      year: "2022",
-      status: "approved",
-      lastInspection: "2024-02-15",
-      vehiclePhotos: 4,
-      formPhotos: 2,
-      certificatePhotos: 1,
-    },
-    {
-      id: "2",
-      registrationNumber: "XYZ-789",
-      vin: "WBADT43483G123456",
-      make: "BMW",
-      model: "X5",
-      year: "2021",
-      status: "pending",
-      lastInspection: "2024-02-20",
-      vehiclePhotos: 3,
-      formPhotos: 1,
-      certificatePhotos: 2,
-    },
-    {
-      id: "3",
-      registrationNumber: "DEF-456",
-      vin: "JH4KA7660MC123456",
-      make: "Honda",
-      model: "Accord",
-      year: "2023",
-      status: "approved",
-      lastInspection: "2024-01-30",
-      vehiclePhotos: 5,
-      formPhotos: 2,
-      certificatePhotos: 1,
-    },
-    {
-      id: "4",
-      registrationNumber: "GHI-789",
-      vin: "1G1JC5444R7123456",
-      make: "Chevrolet",
-      model: "Malibu",
-      year: "2020",
-      status: "rejected",
-      lastInspection: "2024-02-10",
-      vehiclePhotos: 2,
-      formPhotos: 1,
-      certificatePhotos: 0,
-    },
-    {
-      id: "5",
-      registrationNumber: "JKL-012",
-      vin: "1FTEW1E53JF123456",
-      make: "Ford",
-      model: "F-150",
-      year: "2022",
-      status: "pending",
-      lastInspection: "2024-02-22",
-      vehiclePhotos: 3,
-      formPhotos: 2,
-      certificatePhotos: 1,
-    },
-  ]
+  useEffect(() => {
+    const fetchVehicles = async () => {
+      try {
+        setLoading(true)
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: limit.toString(),
+          ...(searchQuery && { search: searchQuery }),
+          ...(statusFilter !== "all" && { filter: statusFilter })
+        })
 
-  const filteredRecords = vehicleRecords.filter((record) => {
-    const matchesSearch =
-      record.registrationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      record.vin.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      record.make.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      record.model.toLowerCase().includes(searchQuery.toLowerCase())
+        const response = await fetch(`/api/vehicles/list?${params}`)
+        const result = await response.json()
 
-    const matchesStatus = statusFilter === "all" || record.status === statusFilter
+        if (response.ok) {
+          setVehicles(result.data)
+          setTotal(result.metadata.total)
+        } else {
+          console.error("Failed to fetch vehicles:", result.error)
+        }
+      } catch (error) {
+        console.error("Error fetching vehicles:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-    return matchesSearch && matchesStatus
-  })
+    fetchVehicles()
+  }, [page, limit, searchQuery, statusFilter])
+
+  const totalPages = Math.ceil(total / limit)
+
+  const vehicleRecords = vehicles.map(vehicle => ({
+    id: vehicle.id,
+    registrationNumber: vehicle.license_plate,
+    vin: vehicle.vin_number,
+    make: vehicle.brand,
+    model: vehicle.model,
+    year: vehicle.year,
+    color: vehicle.color || '-',
+    chassisNumber: vehicle.chassis_number,
+    engineNumber: vehicle.engine_number,
+    fuelType: vehicle.fuel_type || '-',
+    ownerName: vehicle.owner_name || '-',
+    ownerContact: vehicle.owner_contact || '-',
+    status: vehicle.status,
+    registrationDate: vehicle.registration_date ? new Date(vehicle.registration_date).toLocaleDateString() : '-',
+    expirationDate: vehicle.expiration_date ? new Date(vehicle.expiration_date).toLocaleDateString() : '-',
+    lastUpdated: new Date(vehicle.updated_at).toLocaleDateString(),
+    // vehiclePhotos: vehicle.vehiclePhotos || 0,
+    // formPhotos: vehicle.formphotos || 0,
+    // certificatePhotos: vehicle.certificatephotos || 0
+  }))
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -186,41 +151,50 @@ export function VehicleRecordList() {
                   <TableHead>VIN</TableHead>
                   <TableHead>Vehicle</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Last Inspection</TableHead>
+                  <TableHead>Last Updated</TableHead>
                   <TableHead>Documentation</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredRecords.length === 0 ? (
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-24 text-center">
+                      Loading...
+                    </TableCell>
+                  </TableRow>
+                ) : vehicleRecords.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="h-24 text-center">
                       No vehicle records found.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredRecords.map((record) => (
+                  vehicleRecords.map((record) => (
                     <TableRow key={record.id}>
                       <TableCell className="font-medium">{record.registrationNumber}</TableCell>
                       <TableCell>{record.vin}</TableCell>
                       <TableCell>
                         {record.make} {record.model} ({record.year})
                       </TableCell>
-                      <TableCell>{getStatusBadge(record.status)}</TableCell>
-                      <TableCell>{record.lastInspection}</TableCell>
+                      <TableCell>{record.status ? getStatusBadge(record.status) : null}</TableCell>
+                      <TableCell>{record.lastUpdated}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                           <Badge variant="secondary" className="flex items-center gap-1">
                             <Camera className="h-3 w-3" />
-                            {record.vehiclePhotos}
+                            {/* {record.vehiclePhotos} */}
+                            0
                           </Badge>
                           <Badge variant="secondary" className="flex items-center gap-1">
                             <FileText className="h-3 w-3" />
-                            {record.formPhotos}
+                            {/* {record.formPhotos} */}
+                            0
                           </Badge>
                           <Badge variant="secondary" className="flex items-center gap-1">
                             <FileCheck className="h-3 w-3" />
-                            {record.certificatePhotos}
+                            {/* {record.certificatePhotos} */}
+                            0
                           </Badge>
                         </div>
                       </TableCell>

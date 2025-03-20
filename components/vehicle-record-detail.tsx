@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, SetStateAction } from "react"
 import { useRouter } from "next/navigation"
 import {
   Car,
@@ -52,32 +52,28 @@ export function VehicleRecordDetail({ id }: VehicleRecordDetailProps) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("details")
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [vehicleRecord, setVehicleRecord] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Mock data for a vehicle record
-  const vehicleRecord = {
-    id,
-    registrationNumber: "ABC-123",
-    vin: "1HGCM82633A123456",
-    make: "Toyota",
-    model: "Camry",
-    year: "2022",
-    color: "Silver",
-    engineNumber: "EN12345678",
-    fuelType: "Petrol",
-    ownerName: "John Smith",
-    ownerContact: "+1 (555) 123-4567",
-    status: "approved",
-    lastInspection: "2024-02-15",
-    createdAt: "2024-01-10",
-    vehiclePhotos: [
-      "/placeholder.svg?height=600&width=800",
-      "/placeholder.svg?height=600&width=800",
-      "/placeholder.svg?height=600&width=800",
-      "/placeholder.svg?height=600&width=800",
-    ],
-    formPhotos: ["/placeholder.svg?height=600&width=800", "/placeholder.svg?height=600&width=800"],
-    certificatePhotos: ["/placeholder.svg?height=600&width=800"],
-  }
+  useEffect(() => {
+    const fetchVehicleData = async () => {
+      try {
+        const response = await fetch(`/api/vehicles/${id}`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch vehicle data')
+        }
+        const data = await response.json()
+        setVehicleRecord(data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchVehicleData()
+  }, [id])
 
   // Mock inspection history
   const inspectionHistory: InspectionHistory[] = [
@@ -133,6 +129,59 @@ export function VehicleRecordDetail({ id }: VehicleRecordDetailProps) {
       default:
         return null
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="w-full max-w-6xl mx-auto p-6">
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" onClick={() => router.back()}>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-2xl font-bold">Loading vehicle details...</h1>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="w-full max-w-6xl mx-auto p-6">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="icon" onClick={() => router.back()}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-2xl font-bold text-destructive">Error</h1>
+          </div>
+          <Card>
+            <CardContent className="p-6">
+              <p>{error}</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  if (!vehicleRecord) {
+    return (
+      <div className="w-full max-w-6xl mx-auto p-6">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="icon" onClick={() => router.back()}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-2xl font-bold">Vehicle not found</h1>
+          </div>
+          <Card>
+            <CardContent className="p-6">
+              <p>The requested vehicle record could not be found.</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -343,14 +392,14 @@ export function VehicleRecordDetail({ id }: VehicleRecordDetailProps) {
                     <Badge variant="secondary">{vehicleRecord.vehiclePhotos.length} photos</Badge>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {vehicleRecord.vehiclePhotos.map((photo, index) => (
+                    {vehicleRecord.vehiclePhotos.map((photo: SetStateAction<string | null>, index: number) => (
                       <div
                         key={`vehicle-${index}`}
                         className="aspect-video rounded-md overflow-hidden bg-muted cursor-pointer"
                         onClick={() => setSelectedImage(photo)}
                       >
                         <img
-                          src={photo || "/placeholder.svg"}
+                          src={typeof photo === 'string' ? photo : "/placeholder.svg"}
                           alt={`Vehicle photo ${index + 1}`}
                           className="w-full h-full object-cover hover:opacity-90 transition-opacity"
                         />
@@ -371,14 +420,14 @@ export function VehicleRecordDetail({ id }: VehicleRecordDetailProps) {
                     <Badge variant="secondary">{vehicleRecord.formPhotos.length} photos</Badge>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {vehicleRecord.formPhotos.map((photo, index) => (
+                    {vehicleRecord.formPhotos.map((photo: SetStateAction<string | null>, index: number) => (
                       <div
                         key={`form-${index}`}
                         className="aspect-video rounded-md overflow-hidden bg-muted cursor-pointer"
                         onClick={() => setSelectedImage(photo)}
                       >
                         <img
-                          src={photo || "/placeholder.svg"}
+                          src={typeof photo === 'string' ? photo : "/placeholder.svg"}
                           alt={`Form photo ${index + 1}`}
                           className="w-full h-full object-cover hover:opacity-90 transition-opacity"
                         />
@@ -399,14 +448,14 @@ export function VehicleRecordDetail({ id }: VehicleRecordDetailProps) {
                     <Badge variant="secondary">{vehicleRecord.certificatePhotos.length} photos</Badge>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {vehicleRecord.certificatePhotos.map((photo, index) => (
+                    {vehicleRecord.certificatePhotos.map((photo: SetStateAction<string | null>, index: number) => (
                       <div
                         key={`cert-${index}`}
                         className="aspect-video rounded-md overflow-hidden bg-muted cursor-pointer"
                         onClick={() => setSelectedImage(photo)}
                       >
                         <img
-                          src={photo || "/placeholder.svg"}
+                          src={typeof photo === 'string' ? photo : "/placeholder.svg"}
                           alt={`Certificate photo ${index + 1}`}
                           className="w-full h-full object-cover hover:opacity-90 transition-opacity"
                         />
