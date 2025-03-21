@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -27,6 +27,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useToast } from "@/hooks/use-toast"
+import { createClient } from "@/utils/supabase/client"
 import {
   Search,
   MoreHorizontal,
@@ -69,84 +71,41 @@ export function AccountManagement() {
     confirmPassword: "",
   })
 
-  // Sample data
-  const adminAccounts: Account[] = [
-    {
-      id: "1",
-      name: "John Doe",
-      email: "john.doe@example.com",
-      role: "admin",
-      status: "active",
-      lastActive: "Today at 2:30 PM",
-      avatarUrl: "/placeholder.svg",
-    },
-    {
-      id: "2",
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      role: "admin",
-      status: "active",
-      lastActive: "Yesterday at 10:15 AM",
-      avatarUrl: "/placeholder.svg",
-    },
-    {
-      id: "3",
-      name: "Robert Johnson",
-      email: "robert.johnson@example.com",
-      role: "admin",
-      status: "inactive",
-      lastActive: "2 weeks ago",
-      avatarUrl: "/placeholder.svg",
-    },
-  ]
+  const { toast } = useToast()
+  const [adminAccounts, setAdminAccounts] = useState<Account[]>([])
+  const [userAccounts, setUserAccounts] = useState<Account[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  const userAccounts: Account[] = [
-    {
-      id: "4",
-      name: "Emily Davis",
-      email: "emily.davis@example.com",
-      role: "editor",
-      status: "active",
-      lastActive: "Today at 11:45 AM",
-      avatarUrl: "/placeholder.svg",
-    },
-    {
-      id: "5",
-      name: "Michael Wilson",
-      email: "michael.wilson@example.com",
-      role: "viewer",
-      status: "active",
-      lastActive: "Yesterday at 3:20 PM",
-      avatarUrl: "/placeholder.svg",
-    },
-    {
-      id: "6",
-      name: "Sarah Brown",
-      email: "sarah.brown@example.com",
-      role: "editor",
-      status: "pending",
-      lastActive: "Never",
-      avatarUrl: "/placeholder.svg",
-    },
-    {
-      id: "7",
-      name: "David Miller",
-      email: "david.miller@example.com",
-      role: "viewer",
-      status: "inactive",
-      lastActive: "3 weeks ago",
-      avatarUrl: "/placeholder.svg",
-    },
-    {
-      id: "8",
-      name: "Lisa Taylor",
-      email: "lisa.taylor@example.com",
-      role: "viewer",
-      status: "active",
-      lastActive: "Today at 9:10 AM",
-      avatarUrl: "/placeholder.svg",
-    },
-  ]
+  useEffect(() => {
+    fetchAccounts()
+  }, [])
+
+  const fetchAccounts = async () => {
+    try {
+      const supabase = createClient()
+      const { data: users, error } = await supabase
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      const admins = users ? users.filter(user => user.role === 'admin') : []
+      const regularUsers = users ? users.filter(user => user.role !== 'admin') : []
+
+      setAdminAccounts(admins)
+      setUserAccounts(regularUsers)
+    } catch (error) {
+      console.error('Error fetching accounts:', error)
+      toast({
+        title: "Error",
+        description: "Failed to load accounts. Please try again later.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -161,21 +120,61 @@ export function AccountManagement() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      if (newAccount.password !== newAccount.confirmPassword) {
+        throw new Error('Passwords do not match')
+      }
 
-    // Here you would typically send the data to your API
-    console.log("Creating account:", newAccount)
+      const supabase = createClient()
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: newAccount.email,
+        password: newAccount.password,
+        options: {
+          data: {
+            name: newAccount.name,
+            role: newAccount.role
+          }
+        }
+      })
 
-    setIsSubmitting(false)
-    setIsCreating(false)
-    setNewAccount({
-      name: "",
-      email: "",
-      role: "viewer",
-      password: "",
-      confirmPassword: "",
-    })
+      if (signUpError) throw signUpError
+
+      const { error: insertError } = await supabase
+        .from('users')
+        .insert([{
+          id: data.user?.id,
+          email: newAccount.email,
+          name: newAccount.name,
+          role: newAccount.role,
+          status: 'pending'
+        }])
+
+      if (insertError) throw insertError
+
+      toast({
+        title: "Success",
+        description: "Account created successfully"
+      })
+
+      setIsCreating(false)
+      setNewAccount({
+        name: "",
+        email: "",
+        role: "viewer",
+        password: "",
+        confirmPassword: "",
+      })
+      fetchAccounts()
+    } catch (error) {
+      console.error('Error creating account:', error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create account",
+        variant: "destructive"
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const getStatusBadge = (status: AccountStatus) => {
@@ -233,14 +232,14 @@ export function AccountManagement() {
 
   const filteredAdmins = adminAccounts.filter(
     (account) =>
-      account.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      account.email.toLowerCase().includes(searchQuery.toLowerCase()),
+      (account?.name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (account?.email?.toLowerCase() || '').includes(searchQuery.toLowerCase()),
   )
 
   const filteredUsers = userAccounts.filter(
     (account) =>
-      account.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      account.email.toLowerCase().includes(searchQuery.toLowerCase()),
+      (account?.name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (account?.email?.toLowerCase() || '').includes(searchQuery.toLowerCase()),
   )
 
   return (
@@ -367,8 +366,14 @@ export function AccountManagement() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredUsers.length === 0 ? (
-                    <TableRow>
+                  {isLoading ? (
+                    <TableRow key="loading-row">
+                      <TableCell colSpan={6} className="h-24 text-center">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                      </TableCell>
+                    </TableRow>
+                  ) : filteredUsers.length === 0 ? (
+                    <TableRow key="empty-row">
                       <TableCell colSpan={6} className="h-24 text-center">
                         No user accounts found.
                       </TableCell>
@@ -380,7 +385,7 @@ export function AccountManagement() {
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
                               <AvatarImage src={account.avatarUrl} alt={account.name} />
-                              <AvatarFallback>{account.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                              <AvatarFallback>{account.name ? account.name.substring(0, 2).toUpperCase() : "--"}</AvatarFallback>
                             </Avatar>
                             {account.name}
                           </div>
@@ -441,15 +446,22 @@ export function AccountManagement() {
                   <TableRow>
                     <TableHead className="w-[250px]">Name</TableHead>
                     <TableHead>Email</TableHead>
+                    <TableHead>Role</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Last Active</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredAdmins.length === 0 ? (
+                  {isLoading ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="h-24 text-center">
+                      <TableCell colSpan={6} className="h-24 text-center">
+                        Loading...
+                      </TableCell>
+                    </TableRow>
+                  ) : filteredAdmins.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="h-24 text-center">
                         No admin accounts found.
                       </TableCell>
                     </TableRow>
@@ -460,7 +472,7 @@ export function AccountManagement() {
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
                               <AvatarImage src={account.avatarUrl} alt={account.name} />
-                              <AvatarFallback>{account.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                              <AvatarFallback>{account.name ? account.name.substring(0, 2).toUpperCase() : "--"}</AvatarFallback>
                             </Avatar>
                             {account.name}
                           </div>

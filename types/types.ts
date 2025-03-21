@@ -28,3 +28,16 @@ export interface VehicleDocument {
   created_at: string;
   updated_at: string;
 }
+
+export type UserRole = 'Editor' | 'Viewer' | 'Admin';
+
+export interface UserWithRole {
+  id: string; // UUID từ auth.users
+  email: string;
+  role: UserRole | null;
+  status: 'Active' | 'Pending' | 'Inactive';
+  last_sign_in_at: string | null;
+  raw_user_meta_data: {
+    full_name?: string;
+  };
+}
