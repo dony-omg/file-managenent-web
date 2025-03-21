@@ -121,6 +121,19 @@ export function AccountManagement() {
     setIsSubmitting(true)
 
     try {
+      // Validate input
+      if (!newAccount.name.trim()) {
+        throw new Error('Name is required')
+      }
+      if (!newAccount.email.trim()) {
+        throw new Error('Email is required')
+      }
+      if (!newAccount.password.trim()) {
+        throw new Error('Password is required')
+      }
+      if (newAccount.password.length < 6) {
+        throw new Error('Password must be at least 6 characters')
+      }
       if (newAccount.password !== newAccount.confirmPassword) {
         throw new Error('Passwords do not match')
       }
@@ -138,11 +151,12 @@ export function AccountManagement() {
       })
 
       if (signUpError) throw signUpError
+      if (!data.user) throw new Error('Failed to create user')
 
       const { error: insertError } = await supabase
         .from('users')
         .insert([{
-          id: data.user?.id,
+          id: data.user.id,
           email: newAccount.email,
           name: newAccount.name,
           role: newAccount.role,
@@ -153,7 +167,7 @@ export function AccountManagement() {
 
       toast({
         title: "Success",
-        description: "Account created successfully"
+        description: "Account created successfully. User will receive an email to confirm their account."
       })
 
       setIsCreating(false)
@@ -265,7 +279,15 @@ export function AccountManagement() {
                 <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
                     <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" name="name" value={newAccount.name} onChange={handleInputChange} required />
+                    <Input 
+                      id="name" 
+                      name="name" 
+                      value={newAccount.name} 
+                      onChange={handleInputChange} 
+                      required 
+                      disabled={isSubmitting}
+                      placeholder="Enter full name"
+                    />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
@@ -276,11 +298,17 @@ export function AccountManagement() {
                       value={newAccount.email}
                       onChange={handleInputChange}
                       required
+                      disabled={isSubmitting}
+                      placeholder="Enter email address"
                     />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="role">Role</Label>
-                    <Select value={newAccount.role} onValueChange={handleRoleChange}>
+                    <Select 
+                      value={newAccount.role} 
+                      onValueChange={handleRoleChange} 
+                      disabled={isSubmitting}
+                    >
                       <SelectTrigger id="role">
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
@@ -300,6 +328,9 @@ export function AccountManagement() {
                       value={newAccount.password}
                       onChange={handleInputChange}
                       required
+                      disabled={isSubmitting}
+                      placeholder="Enter password"
+                      minLength={6}
                     />
                   </div>
                   <div className="grid gap-2">
@@ -311,16 +342,28 @@ export function AccountManagement() {
                       value={newAccount.confirmPassword}
                       onChange={handleInputChange}
                       required
+                      disabled={isSubmitting}
+                      placeholder="Confirm password"
                     />
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setIsCreating(false)}>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsCreating(false)} 
+                    disabled={isSubmitting}
+                  >
                     Cancel
                   </Button>
                   <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {isSubmitting ? "Creating..." : "Create Account"}
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      <>Create Account</>
+                    )}
                   </Button>
                 </DialogFooter>
               </form>
